@@ -105,21 +105,21 @@ mod tests {
         #[test]
         fn remove_including_a() {
             let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
-            actual.add_hint(&*vec![Hint { letter: 'a', spot: Spot::None() }]);
+            actual.add_hint(&vec![Hint { letter: 'a', spot: Spot::None() }]);
             assert_eq!(actual.guess(), vec![String::from("hello")]);
         }
 
         #[test]
         fn only_including_l() {
             let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
-            actual.add_hint(&*vec![Hint { letter: 'l', spot: Spot::InWithout(vec![2]) }]);
+            actual.add_hint(&vec![Hint { letter: 'l', spot: Spot::InWithout(vec![2]) }]);
             assert_eq!(actual.guess(), vec![String::from("early")]);
         }
 
         #[test]
         fn at_t() {
             let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
-            actual.add_hint(&*vec![Hint { letter: 't', spot: Spot::At(vec![4]) }]);
+            actual.add_hint(&vec![Hint { letter: 't', spot: Spot::At(vec![4]) }]);
             assert_eq!(actual.guess(), vec![String::from("asset")]);
         }
     }
