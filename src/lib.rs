@@ -44,9 +44,19 @@ impl Resolver for SimpleResolver {
         self.dict_words.iter()
             .filter(|word| {
                 for hint in &self.hints {
-                    let res = match hint.spot {
+                    let res = match &hint.spot {
                         Spot::None() => {
                             !word.contains(hint.letter)
+                        }
+                        Spot::InWithout(without_spots) => {
+                            if !word.contains(hint.letter) {
+                                return false;
+                            }
+                            let match_spots = without_spots.iter()
+                                .filter(|spot| {
+                                    word.as_bytes()[*spot.clone() as usize] as char != hint.letter
+                                }).count();
+                            return match_spots > 0;
                         }
                         _ => { true }
                     };
@@ -87,9 +97,16 @@ mod tests {
 
         #[test]
         fn remove_including_a() {
-            let mut actual = SimpleResolver::new(vec!["hello", "early"]);
+            let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
             actual.add_hint(&*vec![Hint { letter: 'a', spot: Spot::None() }]);
             assert_eq!(actual.guess(), vec![String::from("hello")]);
+        }
+
+        #[test]
+        fn only_including_l() {
+            let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
+            actual.add_hint(&*vec![Hint { letter: 'l', spot: Spot::InWithout(vec![2]) }]);
+            assert_eq!(actual.guess(), vec![String::from("early")]);
         }
     }
 }
