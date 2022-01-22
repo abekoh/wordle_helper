@@ -1,6 +1,6 @@
 #[derive(Debug, Clone, Eq, PartialEq)]
 enum Spot {
-    At(i32),
+    At(Vec<i32>),
     InWithout(Vec<i32>),
     None(),
 }
@@ -58,7 +58,14 @@ impl Resolver for SimpleResolver {
                                 }).count();
                             return match_spots > 0;
                         }
-                        _ => { true }
+                        Spot::At(at_spots) => {
+                            for at_spot in at_spots {
+                                if word.as_bytes()[at_spot.clone() as usize] as char == hint.letter {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
                     };
                     if !res {
                         return false;
@@ -107,6 +114,13 @@ mod tests {
             let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
             actual.add_hint(&*vec![Hint { letter: 'l', spot: Spot::InWithout(vec![2]) }]);
             assert_eq!(actual.guess(), vec![String::from("early")]);
+        }
+
+        #[test]
+        fn at_t() {
+            let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
+            actual.add_hint(&*vec![Hint { letter: 't', spot: Spot::At(vec![4]) }]);
+            assert_eq!(actual.guess(), vec![String::from("asset")]);
         }
     }
 }
