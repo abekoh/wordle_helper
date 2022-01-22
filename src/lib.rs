@@ -1,11 +1,11 @@
-#[derive(Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 enum Spot {
     At(i32),
     InWithout(Vec<i32>),
     None(),
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 struct Hint {
     letter: char,
     spot: Spot,
@@ -53,5 +53,12 @@ mod tests {
         let actual = SimpleResolver::new(vec!["hello", "early"]);
         assert_eq!(actual.dict_words, vec!["hello", "early"]);
         assert_eq!(actual.hints.len(), 0);
+    }
+
+    #[test]
+    fn add_hint() {
+        let mut actual = SimpleResolver::new(vec!["hello", "early"]);
+        actual.add_hint(&*vec![Hint { letter: 'a', spot: Spot::None() }]);
+        assert_eq!(actual.hints, vec![Hint { letter: 'a', spot: Spot::None() }]);
     }
 }
