@@ -1,28 +1,34 @@
 #[derive(Debug, Clone, Eq, PartialEq)]
-enum Spot {
+pub enum Spot {
     At(Vec<usize>),
     InWithout(Vec<usize>),
     None(),
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-struct Hint {
+pub struct Hint {
     letter: char,
     spot: Spot,
 }
 
-trait Resolver {
+impl Hint {
+    pub fn new(letter: char, spot: Spot) -> Self {
+        Hint { letter, spot }
+    }
+}
+
+pub trait Resolver {
     fn add_hint(&mut self, results: &[Hint]);
     fn guess(&self) -> Vec<String>;
 }
 
-struct SimpleResolver {
+pub struct SimpleResolver {
     dict_words: Vec<String>,
     hints: Vec<Hint>,
 }
 
 impl SimpleResolver {
-    fn new(dict_words: Vec<&str>) -> SimpleResolver {
+    pub fn new(dict_words: Vec<&str>) -> SimpleResolver {
         SimpleResolver {
             dict_words: dict_words.iter()
                 .map(|word| {
