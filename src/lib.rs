@@ -1,7 +1,7 @@
 #[derive(Debug, Clone, Eq, PartialEq)]
 enum Spot {
-    At(Vec<i32>),
-    InWithout(Vec<i32>),
+    At(Vec<usize>),
+    InWithout(Vec<usize>),
     None(),
 }
 
@@ -54,13 +54,13 @@ impl Resolver for SimpleResolver {
                             }
                             let match_spots = without_spots.iter()
                                 .filter(|spot| {
-                                    word.as_bytes()[*spot.clone() as usize] as char != hint.letter
+                                    word.as_bytes()[*spot.clone()] as char != hint.letter
                                 }).count();
                             return match_spots > 0;
                         }
                         Spot::At(at_spots) => {
                             for at_spot in at_spots {
-                                if word.as_bytes()[at_spot.clone() as usize] as char == hint.letter {
+                                if word.as_bytes()[at_spot.clone()] as char == hint.letter {
                                     return true;
                                 }
                             }
