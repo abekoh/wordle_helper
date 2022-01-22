@@ -1,21 +1,24 @@
+#[derive(Clone)]
 enum Spot {
     At(i32),
     InWithout(Vec<i32>),
     None(),
 }
 
+#[derive(Clone)]
 struct Hint {
     letter: char,
     spot: Spot,
 }
 
 trait Resolver {
-    fn add_hint(results: Vec<Hint>);
-    fn guess() -> Vec<String>;
+    fn add_hint(&mut self, results: &[Hint]);
+    fn guess(&self) -> Vec<String>;
 }
 
 struct SimpleResolver {
-    dict_words: Vec<String>;
+    dict_words: Vec<String>,
+    hints: Vec<Hint>,
 }
 
 impl SimpleResolver {
@@ -24,17 +27,31 @@ impl SimpleResolver {
             dict_words: dict_words.iter()
                 .map(|word| {
                     word.to_string()
-                }).collect()
+                }).collect(),
+            hints: vec![],
         }
     }
 }
 
 impl Resolver for SimpleResolver {
-    fn add_hint(results: Vec<Hint>) {
-        todo!()
+    fn add_hint(&mut self, results: &[Hint]) {
+        results.iter().for_each(|result| {
+            self.hints.push(result.clone());
+        })
     }
 
-    fn guess() -> Vec<String> {
+    fn guess(&self) -> Vec<String> {
         todo!()
+    }
+}
+
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new() {
+        let actual = SimpleResolver::new(vec!["hello", "early"]);
+        assert_eq!(actual.dict_words, vec!["hello", "early"]);
+        assert_eq!(actual.hints.len(), 0);
     }
 }
