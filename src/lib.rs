@@ -41,10 +41,29 @@ impl Resolver for SimpleResolver {
     }
 
     fn guess(&self) -> Vec<String> {
-        todo!()
+        self.dict_words.iter()
+            .filter(|word| {
+                for hint in &self.hints {
+                    let res = match hint.spot {
+                        Spot::None() => {
+                            !word.contains(hint.letter)
+                        }
+                        _ => { true }
+                    };
+                    if !res {
+                        return false;
+                    }
+                }
+                true
+            })
+            .map(|word| {
+                String::from(word)
+            })
+            .collect()
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -60,5 +79,17 @@ mod tests {
         let mut actual = SimpleResolver::new(vec!["hello", "early"]);
         actual.add_hint(&*vec![Hint { letter: 'a', spot: Spot::None() }]);
         assert_eq!(actual.hints, vec![Hint { letter: 'a', spot: Spot::None() }]);
+    }
+
+    #[cfg(test)]
+    mod guess {
+        use super::*;
+
+        #[test]
+        fn remove_including_a() {
+            let mut actual = SimpleResolver::new(vec!["hello", "early"]);
+            actual.add_hint(&*vec![Hint { letter: 'a', spot: Spot::None() }]);
+            assert_eq!(actual.guess(), vec![String::from("hello")]);
+        }
     }
 }
