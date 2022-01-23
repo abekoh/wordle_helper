@@ -41,6 +41,12 @@ impl SimpleResolver {
 }
 
 impl Resolver for SimpleResolver {
+    fn add_hint(&mut self, hints: &[Hint]) {
+        hints.iter().for_each(|hint| {
+            self.hints.push(hint.clone());
+        });
+    }
+
     fn remove_word(&mut self, word: &str) {
         match self.dict_words.iter().position(|r| { r == word }) {
             Some(index) => {
@@ -49,12 +55,6 @@ impl Resolver for SimpleResolver {
             }
             _ => (),
         }
-    }
-
-    fn add_hint(&mut self, hints: &[Hint]) {
-        hints.iter().for_each(|hint| {
-            self.hints.push(hint.clone());
-        });
     }
 
     fn guess(&self) -> Vec<&String> {
