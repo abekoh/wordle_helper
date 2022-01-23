@@ -18,7 +18,7 @@ impl Hint {
 }
 
 pub trait Resolver {
-    fn add_hint(&mut self, hints: &[Hint]);
+    fn add_hint(&mut self, hints: Vec<Hint>);
     fn remove_word(&mut self, word: &str);
     fn guess(&self) -> Vec<&String>;
 }
@@ -41,7 +41,7 @@ impl SimpleResolver {
 }
 
 impl Resolver for SimpleResolver {
-    fn add_hint(&mut self, hints: &[Hint]) {
+    fn add_hint(&mut self, hints: Vec<Hint>) {
         hints.iter().for_each(|hint| {
             self.hints.push(hint.clone());
         });
@@ -108,7 +108,7 @@ mod tests {
     #[test]
     fn add_hint() {
         let mut actual = SimpleResolver::new(vec!["hello", "early"]);
-        actual.add_hint(&*vec![Hint { letter: 'a', spot: Spot::None() }]);
+        actual.add_hint(vec![Hint { letter: 'a', spot: Spot::None() }]);
         assert_eq!(actual.hints, vec![Hint { letter: 'a', spot: Spot::None() }]);
     }
 
@@ -126,21 +126,21 @@ mod tests {
         #[test]
         fn remove_including_a() {
             let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
-            actual.add_hint(&vec![Hint { letter: 'a', spot: Spot::None() }]);
+            actual.add_hint(vec![Hint { letter: 'a', spot: Spot::None() }]);
             assert_eq!(actual.guess(), vec![&String::from("hello")]);
         }
 
         #[test]
         fn only_including_l() {
             let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
-            actual.add_hint(&vec![Hint { letter: 'l', spot: Spot::InWithout(vec![2]) }]);
+            actual.add_hint(vec![Hint { letter: 'l', spot: Spot::InWithout(vec![2]) }]);
             assert_eq!(actual.guess(), vec![&String::from("early")]);
         }
 
         #[test]
         fn at_t() {
             let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
-            actual.add_hint(&vec![Hint { letter: 't', spot: Spot::At(vec![4]) }]);
+            actual.add_hint(vec![Hint { letter: 't', spot: Spot::At(vec![4]) }]);
             assert_eq!(actual.guess(), vec![&String::from("asset")]);
         }
     }
