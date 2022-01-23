@@ -25,11 +25,24 @@ fn main() {
         }
     }
 
-    resolver.add_hint(vec![Hint::new('a', Spot::None())]);
-    resolver.add_hint(vec![Hint::new('t', Spot::At(vec![1]))]);
-    for guessed in resolver.guess() {
-        println!("{}", guessed);
+    loop {
+        println!("\nPlease input result (0=not matched, 1=any, 2=exact):");
+        let mut hint_input = String::new();
+        match io::stdin().read_line(&mut hint_input) {
+            Ok(_) => {
+                eprintln!("input word of length must be {}", 5);
+            }
+            Err(e) => {
+                eprintln!("failed to input word: {}", e);
+            }
+        }
     }
+
+    // resolver.add_hint(vec![Hint::new('a', Spot::None())]);
+    // resolver.add_hint(vec![Hint::new('t', Spot::At(vec![1]))]);
+    // for guessed in resolver.guess() {
+    //     println!("{}", guessed);
+    // }
 }
 
 fn get_words() -> Vec<String> {
