@@ -158,7 +158,7 @@ mod tests {
                 Hint::new('b', Spot::None()),
                 Hint::new('o', Spot::None()),
                 Hint::new('u', Spot::InWithout(vec![2])),
-                Hint::new('n', Spot::At(vec![3])),
+                Hint::new('n', Spot::At(3)),
                 Hint::new('d', Spot::None()),
             ]);
         }
