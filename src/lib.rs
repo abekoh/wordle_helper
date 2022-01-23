@@ -180,11 +180,16 @@ mod tests {
         }
 
 
-        #[test]
-        fn at_t() {
-            let mut actual = SimpleResolver::new(5, &preset_words());
-            actual.add_hint("dummy", &vec![Hint { letter: 't', spot: Spot::At(4) }]);
-            assert_eq!(actual.guess(), &vec![String::from("asset")]);
+        #[cfg(test)]
+        mod at {
+            use super::*;
+
+            #[test]
+            fn t_4() {
+                let mut actual = SimpleResolver::new(5, &preset_words());
+                actual.add_hint("dummy", &vec![Hint { letter: 't', spot: Spot::At(4) }]);
+                assert_eq!(actual.guess(), &vec![String::from("asset")]);
+            }
         }
     }
 }
