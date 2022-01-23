@@ -191,5 +191,39 @@ mod tests {
                 assert_eq!(actual.guess(), &vec![String::from("asset")]);
             }
         }
+
+        #[cfg(test)]
+        mod multiple {
+            use super::*;
+
+            #[test]
+            fn multiple_1() {
+                // early
+                let mut actual = SimpleResolver::new(5, &vec![
+                    "hello".to_string(),
+                    "early".to_string(),
+                    "asset".to_string(),
+                    "bound".to_string(),
+                    "heard".to_string(),
+                    "spice".to_string(),
+                ]);
+                actual.add_hint("bound", &vec![
+                    Hint::new('b', Spot::None()),
+                    Hint::new('o', Spot::None()),
+                    Hint::new('u', Spot::None()),
+                    Hint::new('n', Spot::None()),
+                    Hint::new('d', Spot::None()),
+                ]);
+                assert_eq!(actual.guess(), &vec![String::from("early"), String::from("asset"), String::from("spice")]);
+                actual.add_hint("spice", &vec![
+                    Hint::new('s', Spot::InWithout(0)),
+                    Hint::new('p', Spot::None()),
+                    Hint::new('i', Spot::None()),
+                    Hint::new('c', Spot::None()),
+                    Hint::new('e', Spot::InWithout(4)),
+                ]);
+                assert_eq!(actual.guess(), &vec![String::from("asset")]);
+            }
+        }
     }
 }
