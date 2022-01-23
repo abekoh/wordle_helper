@@ -30,7 +30,7 @@ pub struct SimpleResolver {
 }
 
 impl SimpleResolver {
-    pub fn new(width: i32, dict_words: Vec<&str>) -> SimpleResolver {
+    pub fn new(width: i32, dict_words: &Vec<String>) -> SimpleResolver {
         SimpleResolver {
             width,
             dict_words: dict_words.iter()
@@ -53,6 +53,9 @@ impl Resolver for SimpleResolver {
     }
 
     fn remove_word(&mut self, word: &str) {
+        if word.len() != self.width as usize {
+            return ();
+        }
         match self.dict_words.iter().position(|r| { r == word }) {
             Some(index) => {
                 self.dict_words.swap_remove(index);
@@ -109,7 +112,7 @@ mod tests {
 
         #[test]
         fn asset_fields() {
-            let actual = SimpleResolver::new(5, vec!["hello", "early"]);
+            let actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string()]);
             assert_eq!(actual.width, 5);
             assert_eq!(actual.dict_words, vec!["hello", "early"]);
             assert_eq!(actual.hints.len(), 0);
@@ -117,7 +120,7 @@ mod tests {
 
         #[test]
         fn filter_word_only_length_is_5() {
-            let actual = SimpleResolver::new(5, vec!["hello", "dog", "in", "early", "difference"]);
+            let actual = SimpleResolver::new(5, &vec!["hello".to_string(), "dog".to_string(), "in".to_string(), "early".to_string(), "difference".to_string()]);
             assert_eq!(actual.dict_words, vec!["hello", "early"]);
         }
     }
@@ -125,14 +128,14 @@ mod tests {
 
     #[test]
     fn add_hint() {
-        let mut actual = SimpleResolver::new(5, vec!["hello", "early"]);
+        let mut actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string()]);
         actual.add_hint(vec![Hint { letter: 'a', spot: Spot::None() }]);
         assert_eq!(actual.hints, vec![Hint { letter: 'a', spot: Spot::None() }]);
     }
 
     #[test]
     fn remove_word() {
-        let mut actual = SimpleResolver::new(5, vec!["hello", "early"]);
+        let mut actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string()]);
         actual.remove_word("hello");
         assert_eq!(actual.dict_words, vec!["early"]);
     }
@@ -143,21 +146,21 @@ mod tests {
 
         #[test]
         fn remove_including_a() {
-            let mut actual = SimpleResolver::new(5, vec!["hello", "early", "asset"]);
+            let mut actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string(), "asset".to_string()]);
             actual.add_hint(vec![Hint { letter: 'a', spot: Spot::None() }]);
             assert_eq!(actual.guess(), vec![&String::from("hello")]);
         }
 
         #[test]
         fn only_including_l() {
-            let mut actual = SimpleResolver::new(5, vec!["hello", "early", "asset"]);
+            let mut actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string(), "asset".to_string()]);
             actual.add_hint(vec![Hint { letter: 'l', spot: Spot::InWithout(vec![2]) }]);
             assert_eq!(actual.guess(), vec![&String::from("early")]);
         }
 
         #[test]
         fn at_t() {
-            let mut actual = SimpleResolver::new(5, vec!["hello", "early", "asset"]);
+            let mut actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string(), "asset".to_string()]);
             actual.add_hint(vec![Hint { letter: 't', spot: Spot::At(vec![4]) }]);
             assert_eq!(actual.guess(), vec![&String::from("asset")]);
         }
