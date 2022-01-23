@@ -18,7 +18,7 @@ impl Hint {
 }
 
 pub trait Resolver {
-    fn add_hint(&mut self, results: &[Hint]);
+    fn add_hint(&mut self, hints: &[Hint]);
     fn guess(&self) -> Vec<&String>;
 }
 
@@ -40,8 +40,8 @@ impl SimpleResolver {
 }
 
 impl Resolver for SimpleResolver {
-    fn add_hint(&mut self, results: &[Hint]) {
-        results.iter().for_each(|result| {
+    fn add_hint(&mut self, hints: &[Hint]) {
+        hints.iter().for_each(|result| {
             self.hints.push(result.clone());
         })
     }
