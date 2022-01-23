@@ -55,13 +55,10 @@ impl SimpleResolver {
                             if !word.contains(hint.letter) {
                                 return false;
                             }
-                            return word.as_bytes()[*spot as usize] as char != hint.letter;
+                            word.as_bytes()[*spot as usize] as char != hint.letter
                         }
                         Spot::At(at_spot) => {
-                            if word.as_bytes()[at_spot.clone()] as char == hint.letter {
-                                return true;
-                            }
-                            return false;
+                            word.as_bytes()[at_spot.clone()] as char == hint.letter
                         }
                     };
                     if !res {
