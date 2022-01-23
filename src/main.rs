@@ -18,9 +18,10 @@ fn main() {
             Ok(_) => {
                 match state.add_word(&guessed_word) {
                     Ok(_) => break,
-                    Err(_) => (),
+                    Err(e) => {
+                        eprintln!("{}", e);
+                    }
                 }
-                eprintln!("input word of length must be {}", 5);
             }
             Err(e) => {
                 eprintln!("failed to input word: {}", e);
