@@ -7,6 +7,15 @@ use wordle_resolver::{Hint, Resolver, SimpleResolver, Spot};
 const DICT_PATH: &str = "data/words_alpha.txt";
 
 fn main() {
+    let mut resolver = SimpleResolver::new(5, &get_words());
+    resolver.add_hint(vec![Hint::new('a', Spot::None())]);
+    resolver.add_hint(vec![Hint::new('t', Spot::At(vec![1]))]);
+    for guessed in resolver.guess() {
+        println!("{}", guessed);
+    }
+}
+
+fn get_words() -> Vec<String> {
     let file = match File::open(DICT_PATH) {
         Ok(v) => v,
         Err(e) => {
@@ -23,11 +32,5 @@ fn main() {
             String::from(line.trim())
         })
         .collect();
-
-    let mut resolver = SimpleResolver::new(5, &dict);
-    resolver.add_hint(vec![Hint::new('a', Spot::None())]);
-    resolver.add_hint(vec![Hint::new('t', Spot::At(vec![1]))]);
-    for guessed in resolver.guess() {
-        println!("{}", guessed);
-    }
+    dict
 }
