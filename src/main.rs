@@ -72,7 +72,7 @@ fn get_words() -> Vec<String> {
 struct InputState {
     width: usize,
     word: Option<String>,
-    hint_input: Option<String>,
+    hint: Option<Hint>,
 }
 
 impl InputState {
@@ -80,7 +80,7 @@ impl InputState {
         InputState {
             width,
             word: None,
-            hint_input: None,
+            hint: None,
         }
     }
 
@@ -89,6 +89,22 @@ impl InputState {
             return Result::Err("invalid word length");
         }
         self.word = Option::from(input.trim().to_string());
+        Result::Ok(())
+    }
+
+    pub fn add_hint(&mut self, input: &str) -> Result<(), &'static str> {
+        let trimmed = input.trim();
+        if trimmed.len() != self.width {
+            return Result::Err("invalid length");
+        }
+        for c in trimmed.chars() {
+            match c {
+                '0' | '1' | '2' => {}
+                _ => {
+                    return Result::Err("input must be 1,2,3");
+                }
+            }
+        }
         Result::Ok(())
     }
 }
@@ -121,6 +137,28 @@ mod tests {
             let mut state = InputState::new(5);
             let actual = state.add_word("banana");
             assert!(!actual.is_ok());
+        }
+    }
+
+    #[cfg(test)]
+    mod add_hint {
+        use super::*;
+
+        #[test]
+        fn valid() {
+            let mut state = InputState::new(5);
+            let actual = state.add_hint("00120");
+            assert!(actual.is_ok());
+        }
+
+        #[test]
+        fn invalid() {
+            let inputs = vec!["30120", "a0120", "001201"];
+            for input in inputs {
+                let mut state = InputState::new(5);
+                let actual = state.add_hint(input);
+                assert!(!actual.is_ok());
+            }
         }
     }
 }
