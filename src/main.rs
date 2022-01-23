@@ -10,6 +10,8 @@ fn main() {
     let mut resolver = SimpleResolver::new(5, &get_words());
 
     loop {
+        println!("\nRemining words length: {}", resolver.remining_words_length());
+
         let mut state = InputState::new(5);
 
         loop {
