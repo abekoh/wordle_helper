@@ -26,7 +26,6 @@ pub trait Resolver {
 pub struct SimpleResolver {
     width: i32,
     dict_words: Vec<String>,
-    hints: Vec<Hint>,
 }
 
 impl SimpleResolver {
@@ -40,7 +39,6 @@ impl SimpleResolver {
                 .map(|word| {
                     word.to_string()
                 }).collect(),
-            hints: vec![],
         }
     }
 
@@ -115,7 +113,6 @@ mod tests {
             let actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string()]);
             assert_eq!(actual.width, 5);
             assert_eq!(actual.dict_words, vec!["hello", "early"]);
-            assert_eq!(actual.hints.len(), 0);
         }
 
         #[test]
