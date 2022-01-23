@@ -20,6 +20,7 @@ impl Hint {
 pub trait Resolver {
     fn guess(&self) -> &Vec<String>;
     fn add_hint(&mut self, word: &str, hints: &Vec<Hint>);
+    fn candidate_length(&self) -> usize;
 }
 
 #[derive(Debug)]
@@ -97,6 +98,10 @@ impl Resolver for SimpleResolver {
     fn add_hint(&mut self, word: &str, hints: &Vec<Hint>) {
         self.remove_word(word);
         self.update_with_hints(hints);
+    }
+
+    fn candidate_length(&self) -> usize {
+        self.dict_words.len()
     }
 }
 
