@@ -160,12 +160,25 @@ mod tests {
             }
         }
 
-        #[test]
-        fn only_including_l() {
-            let mut actual = SimpleResolver::new(5, &preset_words());
-            actual.add_hint("dummy", &vec![Hint { letter: 'l', spot: Spot::InWithout(2) }]);
-            assert_eq!(actual.guess(), &vec![String::from("early")]);
+        #[cfg(test)]
+        mod only_including {
+            use super::*;
+
+            #[test]
+            fn l_2() {
+                let mut actual = SimpleResolver::new(5, &preset_words());
+                actual.add_hint("dummy", &vec![Hint { letter: 'l', spot: Spot::InWithout(2) }]);
+                assert_eq!(actual.guess(), &vec![String::from("early")]);
+            }
+
+            #[test]
+            fn e_0() {
+                let mut actual = SimpleResolver::new(5, &preset_words());
+                actual.add_hint("dummy", &vec![Hint { letter: 'e', spot: Spot::InWithout(0) }]);
+                assert_eq!(actual.guess(), &vec![String::from("hello"), String::from("asset")]);
+            }
         }
+
 
         #[test]
         fn at_t() {
