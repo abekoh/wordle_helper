@@ -32,8 +32,11 @@ pub struct SimpleResolver {
 impl SimpleResolver {
     pub fn new(width: i32, dict_words: Vec<&str>) -> SimpleResolver {
         SimpleResolver {
-            width: width,
+            width,
             dict_words: dict_words.iter()
+                .filter(|word| {
+                    word.len() == width as usize
+                })
                 .map(|word| {
                     word.to_string()
                 }).collect(),
@@ -110,6 +113,12 @@ mod tests {
             assert_eq!(actual.width, 5);
             assert_eq!(actual.dict_words, vec!["hello", "early"]);
             assert_eq!(actual.hints.len(), 0);
+        }
+
+        #[test]
+        fn filter_word_only_length_is_5() {
+            let actual = SimpleResolver::new(5, vec!["hello", "dog", "in", "early", "difference"]);
+            assert_eq!(actual.dict_words, vec!["hello", "early"]);
         }
     }
 
