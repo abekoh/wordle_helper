@@ -50,7 +50,7 @@ fn main() {
 
         let (word, hints) = state.get().unwrap();
 
-        resolver.update_with_hints(word, hints);
+        resolver.add_hint(word, hints);
 
         for guessed in resolver.guess() {
             println!("{}", guessed);
