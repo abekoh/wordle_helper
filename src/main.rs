@@ -100,9 +100,18 @@ impl InputState {
         if trimmed.len() != self.width {
             return Result::Err("invalid length");
         }
-        for c in trimmed.chars() {
-            match c {
-                '0' | '1' | '2' => {}
+        for (i, hint_c) in trimmed.chars().enumerate() {
+            let word_c = self.word.as_ref().unwrap().chars().nth(i).unwrap();
+            match hint_c {
+                '0' => {
+                    self.hint.push(Hint::new(word_c, Spot::None()));
+                }
+                '1' => {
+                    self.hint.push(Hint::new(word_c, Spot::InWithout(i)));
+                }
+                '2' => {
+                    self.hint.push(Hint::new(word_c, Spot::At(i)));
+                }
                 _ => {
                     return Result::Err("input must be 1,2,3");
                 }
@@ -148,7 +157,6 @@ mod tests {
         use super::*;
 
         #[test]
-        #[ignore]
         fn valid() {
             let mut state = InputState::new(5);
             state.add_word("bound").unwrap();
