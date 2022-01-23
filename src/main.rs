@@ -157,7 +157,7 @@ mod tests {
             assert_eq!(state.hint, vec![
                 Hint::new('b', Spot::None()),
                 Hint::new('o', Spot::None()),
-                Hint::new('u', Spot::InWithout(vec![2])),
+                Hint::new('u', Spot::InWithout(2)),
                 Hint::new('n', Spot::At(3)),
                 Hint::new('d', Spot::None()),
             ]);
