@@ -93,6 +93,9 @@ impl InputState {
     }
 
     pub fn add_hint(&mut self, input: &str) -> Result<(), &'static str> {
+        if self.word.is_none() {
+            return Result::Err("add word before");
+        }
         let trimmed = input.trim();
         if trimmed.len() != self.width {
             return Result::Err("invalid length");
@@ -147,18 +150,27 @@ mod tests {
         #[test]
         fn valid() {
             let mut state = InputState::new(5);
+            state.add_word("apple").unwrap();
             let actual = state.add_hint("00120");
             assert!(actual.is_ok());
         }
 
         #[test]
-        fn invalid() {
+        fn invalid_nums() {
             let inputs = vec!["30120", "a0120", "001201"];
             for input in inputs {
                 let mut state = InputState::new(5);
+                state.add_word("apple").unwrap();
                 let actual = state.add_hint(input);
                 assert!(!actual.is_ok());
             }
+        }
+
+        #[test]
+        fn invalid_no_word() {
+            let mut state = InputState::new(5);
+            let actual = state.add_hint("00120");
+            assert!(!actual.is_ok());
         }
     }
 }
