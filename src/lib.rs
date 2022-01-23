@@ -19,6 +19,7 @@ impl Hint {
 
 pub trait Resolver {
     fn add_hint(&mut self, hints: &[Hint]);
+    fn remove_word(&mut self, word: &str);
     fn guess(&self) -> Vec<&String>;
 }
 
@@ -40,10 +41,20 @@ impl SimpleResolver {
 }
 
 impl Resolver for SimpleResolver {
+    fn remove_word(&mut self, word: &str) {
+        match self.dict_words.iter().position(|r| { r == word }) {
+            Some(index) => {
+                self.dict_words.swap_remove(index);
+                ()
+            }
+            _ => (),
+        }
+    }
+
     fn add_hint(&mut self, hints: &[Hint]) {
-        hints.iter().for_each(|result| {
-            self.hints.push(result.clone());
-        })
+        hints.iter().for_each(|hint| {
+            self.hints.push(hint.clone());
+        });
     }
 
     fn guess(&self) -> Vec<&String> {
@@ -99,6 +110,13 @@ mod tests {
         let mut actual = SimpleResolver::new(vec!["hello", "early"]);
         actual.add_hint(&*vec![Hint { letter: 'a', spot: Spot::None() }]);
         assert_eq!(actual.hints, vec![Hint { letter: 'a', spot: Spot::None() }]);
+    }
+
+    #[test]
+    fn remove_word() {
+        let mut actual = SimpleResolver::new(vec!["hello", "early"]);
+        actual.remove_word("hello");
+        assert_eq!(actual.dict_words, vec!["early"]);
     }
 
     #[cfg(test)]
