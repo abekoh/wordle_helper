@@ -72,7 +72,7 @@ fn get_words() -> Vec<String> {
 struct InputState {
     width: usize,
     word: Option<String>,
-    hint: Option<Hint>,
+    hint: Vec<Hint>,
 }
 
 impl InputState {
@@ -80,7 +80,7 @@ impl InputState {
         InputState {
             width,
             word: None,
-            hint: None,
+            hint: vec![],
         }
     }
 
@@ -148,11 +148,19 @@ mod tests {
         use super::*;
 
         #[test]
+        #[ignore]
         fn valid() {
             let mut state = InputState::new(5);
-            state.add_word("apple").unwrap();
+            state.add_word("bound").unwrap();
             let actual = state.add_hint("00120");
             assert!(actual.is_ok());
+            assert_eq!(state.hint, vec![
+                Hint::new('b', Spot::None()),
+                Hint::new('o', Spot::None()),
+                Hint::new('u', Spot::InWithout(vec![2])),
+                Hint::new('n', Spot::At(vec![3])),
+                Hint::new('d', Spot::None()),
+            ]);
         }
 
         #[test]
