@@ -7,46 +7,47 @@ use wordle_resolver::{Hint, Resolver, SimpleResolver, Spot};
 const DICT_PATH: &str = "data/words_alpha.txt";
 
 fn main() {
-    // let mut resolver = SimpleResolver::new(5, &get_words());
-
-    let mut state = InputState::new(5);
+    let mut resolver = SimpleResolver::new(5, &get_words());
 
     loop {
-        println!("\nPlease input you guessed word:");
-        let mut guessed_word = String::new();
-        match io::stdin().read_line(&mut guessed_word) {
-            Ok(_) => {
-                match state.add_word(&guessed_word) {
-                    Ok(_) => break,
-                    Err(e) => {
-                        eprintln!("{}", e);
+        let mut state = InputState::new(5);
+
+        loop {
+            println!("\nPlease input you guessed word:");
+            let mut guessed_word = String::new();
+            match io::stdin().read_line(&mut guessed_word) {
+                Ok(_) => {
+                    match state.add_word(&guessed_word) {
+                        Ok(_) => break,
+                        Err(e) => {
+                            eprintln!("{}", e);
+                        }
                     }
                 }
+                Err(e) => {
+                    eprintln!("failed to input word: {}", e);
+                }
             }
-            Err(e) => {
-                eprintln!("failed to input word: {}", e);
+        }
+
+        loop {
+            println!("\nPlease input result (0=not matched, 1=any, 2=exact):");
+            let mut hint_input = String::new();
+            match io::stdin().read_line(&mut hint_input) {
+                Ok(_) => {
+                    match state.add_hint(&hint_input) {
+                        Ok(_) => break,
+                        Err(e) => {
+                            eprintln!("{}", e);
+                        }
+                    }
+                }
+                Err(e) => {
+                    eprintln!("failed to input word: {}", e);
+                }
             }
         }
     }
-
-    loop {
-        println!("\nPlease input result (0=not matched, 1=any, 2=exact):");
-        let mut hint_input = String::new();
-        match io::stdin().read_line(&mut hint_input) {
-            Ok(_) => {
-                eprintln!("input word of length must be {}", 5);
-            }
-            Err(e) => {
-                eprintln!("failed to input word: {}", e);
-            }
-        }
-    }
-
-    // resolver.add_hint(vec![Hint::new('a', Spot::None())]);
-    // resolver.add_hint(vec![Hint::new('t', Spot::At(vec![1]))]);
-    // for guessed in resolver.guess() {
-    //     println!("{}", guessed);
-    // }
 }
 
 fn get_words() -> Vec<String> {
