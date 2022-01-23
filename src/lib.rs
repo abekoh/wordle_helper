@@ -19,7 +19,7 @@ impl Hint {
 
 pub trait Resolver {
     fn add_hint(&mut self, results: &[Hint]);
-    fn guess(&self) -> Vec<String>;
+    fn guess(&self) -> Vec<&String>;
 }
 
 pub struct SimpleResolver {
@@ -46,7 +46,7 @@ impl Resolver for SimpleResolver {
         })
     }
 
-    fn guess(&self) -> Vec<String> {
+    fn guess(&self) -> Vec<&String> {
         self.dict_words.iter()
             .filter(|word| {
                 for hint in &self.hints {
@@ -79,9 +79,6 @@ impl Resolver for SimpleResolver {
                 }
                 true
             })
-            .map(|word| {
-                String::from(word)
-            })
             .collect()
     }
 }
@@ -112,21 +109,21 @@ mod tests {
         fn remove_including_a() {
             let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
             actual.add_hint(&vec![Hint { letter: 'a', spot: Spot::None() }]);
-            assert_eq!(actual.guess(), vec![String::from("hello")]);
+            assert_eq!(actual.guess(), vec![&String::from("hello")]);
         }
 
         #[test]
         fn only_including_l() {
             let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
             actual.add_hint(&vec![Hint { letter: 'l', spot: Spot::InWithout(vec![2]) }]);
-            assert_eq!(actual.guess(), vec![String::from("early")]);
+            assert_eq!(actual.guess(), vec![&String::from("early")]);
         }
 
         #[test]
         fn at_t() {
             let mut actual = SimpleResolver::new(vec!["hello", "early", "asset"]);
             actual.add_hint(&vec![Hint { letter: 't', spot: Spot::At(vec![4]) }]);
-            assert_eq!(actual.guess(), vec![String::from("asset")]);
+            assert_eq!(actual.guess(), vec![&String::from("asset")]);
         }
     }
 }
