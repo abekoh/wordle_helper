@@ -103,4 +103,24 @@ mod tests {
         let actual = InputState::new(5);
         assert_eq!(actual.width, 5);
     }
+
+
+    #[cfg(test)]
+    mod add_word {
+        use super::*;
+
+        #[test]
+        fn valid() {
+            let mut state = InputState::new(5);
+            let actual = state.add_word("apple");
+            assert!(actual.is_ok());
+        }
+
+        #[test]
+        fn invalid() {
+            let mut state = InputState::new(5);
+            let actual = state.add_word("banana");
+            assert!(!actual.is_ok());
+        }
+    }
 }
