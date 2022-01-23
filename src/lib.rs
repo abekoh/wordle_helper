@@ -198,7 +198,6 @@ mod tests {
 
             #[test]
             fn multiple_1() {
-                // early
                 let mut actual = SimpleResolver::new(5, &vec![
                     "hello".to_string(),
                     "early".to_string(),
