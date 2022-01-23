@@ -100,12 +100,19 @@ impl Resolver for SimpleResolver {
 mod tests {
     use super::*;
 
-    #[test]
-    fn new() {
-        let actual = SimpleResolver::new(5, vec!["hello", "early"]);
-        assert_eq!(actual.dict_words, vec!["hello", "early"]);
-        assert_eq!(actual.hints.len(), 0);
+    #[cfg(test)]
+    mod new {
+        use super::*;
+
+        #[test]
+        fn asset_fields() {
+            let actual = SimpleResolver::new(5, vec!["hello", "early"]);
+            assert_eq!(actual.width, 5);
+            assert_eq!(actual.dict_words, vec!["hello", "early"]);
+            assert_eq!(actual.hints.len(), 0);
+        }
     }
+
 
     #[test]
     fn add_hint() {
