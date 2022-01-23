@@ -124,13 +124,6 @@ mod tests {
         }
     }
 
-    #[test]
-    fn remove_word() {
-        let mut actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string()]);
-        actual.remove_word("hello");
-        assert_eq!(actual.dict_words, vec!["early"]);
-    }
-
     #[cfg(test)]
     mod guess {
         use super::*;
