@@ -1,5 +1,5 @@
-use std::io;
 use std::fs::File;
+use std::io;
 use std::io::BufRead;
 
 use wordle_resolver::{Hint, Resolver, SimpleResolver, Spot};
@@ -46,6 +46,15 @@ fn main() {
                     eprintln!("failed to input word: {}", e);
                 }
             }
+        }
+
+        let (word, hints) = state.get().unwrap();
+
+        resolver.remove_word(&word);
+        resolver.add_hint(hints);
+
+        for guessed in resolver.guess() {
+            println!("{}", guessed);
         }
     }
 }
@@ -119,6 +128,19 @@ impl InputState {
             }
         }
         Result::Ok(())
+    }
+
+    pub fn get(&self) -> Result<(String, Vec<Hint>), &'static str> {
+        if self.word.is_none() {
+            return Result::Err("word are empty");
+        }
+        if self.hint.is_empty() {
+            return Result::Err("hints are empty");
+        }
+        return Result::Ok((
+            self.word.clone().unwrap(),
+            self.hint.clone(),
+        ));
     }
 }
 
