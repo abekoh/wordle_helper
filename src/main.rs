@@ -7,15 +7,18 @@ use wordle_resolver::{Hint, Resolver, SimpleResolver, Spot};
 const DICT_PATH: &str = "data/words_alpha.txt";
 
 fn main() {
-    let mut resolver = SimpleResolver::new(5, &get_words());
+    // let mut resolver = SimpleResolver::new(5, &get_words());
+
+    let mut state = InputState::new(5);
 
     loop {
         println!("\nPlease input you guessed word:");
         let mut guessed_word = String::new();
         match io::stdin().read_line(&mut guessed_word) {
             Ok(_) => {
-                if guessed_word.trim().len() == 5 {
-                    break;
+                match state.add_word(&guessed_word) {
+                    Ok(_) => break,
+                    Err(_) => (),
                 }
                 eprintln!("input word of length must be {}", 5);
             }
@@ -63,4 +66,40 @@ fn get_words() -> Vec<String> {
         })
         .collect();
     dict
+}
+
+struct InputState {
+    width: usize,
+    word: Option<String>,
+    hint_input: Option<String>,
+}
+
+impl InputState {
+    pub fn new(width: usize) -> Self {
+        InputState {
+            width,
+            word: None,
+            hint_input: None,
+        }
+    }
+
+    pub fn add_word(&mut self, input: &str) -> Result<(), &'static str> {
+        if input.trim().len() != self.width {
+            return Result::Err("invalid word length");
+        }
+        self.word = Option::from(input.trim().to_string());
+        Result::Ok(())
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new() {
+        let actual = InputState::new(5);
+        assert_eq!(actual.width, 5);
+    }
 }
