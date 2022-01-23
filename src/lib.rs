@@ -1,7 +1,7 @@
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Spot {
     At(usize),
-    InWithout(Vec<usize>),
+    InWithout(usize),
     None(),
 }
 
@@ -73,15 +73,11 @@ impl Resolver for SimpleResolver {
                         Spot::None() => {
                             !word.contains(hint.letter)
                         }
-                        Spot::InWithout(without_spots) => {
+                        Spot::InWithout(spot) => {
                             if !word.contains(hint.letter) {
                                 return false;
                             }
-                            let match_spots = without_spots.iter()
-                                .filter(|spot| {
-                                    word.as_bytes()[*spot.clone()] as char != hint.letter
-                                }).count();
-                            return match_spots > 0;
+                            return word.as_bytes()[*spot as usize] as char != hint.letter;
                         }
                         Spot::At(at_spot) => {
                             if word.as_bytes()[at_spot.clone()] as char == hint.letter {
@@ -152,7 +148,7 @@ mod tests {
         #[test]
         fn only_including_l() {
             let mut actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string(), "asset".to_string()]);
-            actual.add_hint(vec![Hint { letter: 'l', spot: Spot::InWithout(vec![2]) }]);
+            actual.add_hint(vec![Hint { letter: 'l', spot: Spot::InWithout(2) }]);
             assert_eq!(actual.guess(), vec![&String::from("early")]);
         }
 
