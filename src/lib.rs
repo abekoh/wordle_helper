@@ -18,11 +18,12 @@ impl Hint {
 }
 
 pub trait Resolver {
-    fn add_hint(&mut self, hints: Vec<Hint>);
+    fn add_hint(&mut self, hints: &Vec<Hint>);
     fn remove_word(&mut self, word: &str);
     fn guess(&self) -> Vec<&String>;
 }
 
+#[derive(Debug)]
 pub struct SimpleResolver {
     width: i32,
     dict_words: Vec<String>,
@@ -46,7 +47,7 @@ impl SimpleResolver {
 }
 
 impl Resolver for SimpleResolver {
-    fn add_hint(&mut self, hints: Vec<Hint>) {
+    fn add_hint(&mut self, hints: &Vec<Hint>) {
         hints.iter().for_each(|hint| {
             self.hints.push(hint.clone());
         });

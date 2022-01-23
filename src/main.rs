@@ -130,7 +130,7 @@ impl InputState {
         Result::Ok(())
     }
 
-    pub fn get(&self) -> Result<(String, Vec<Hint>), &'static str> {
+    pub fn get(&self) -> Result<(&str, &Vec<Hint>), &'static str> {
         if self.word.is_none() {
             return Result::Err("word are empty");
         }
@@ -138,8 +138,8 @@ impl InputState {
             return Result::Err("hints are empty");
         }
         return Result::Ok((
-            self.word.clone().unwrap(),
-            self.hint.clone(),
+            &self.word.as_ref().unwrap(),
+            &self.hint,
         ));
     }
 }
