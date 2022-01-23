@@ -18,7 +18,7 @@ impl Hint {
 }
 
 pub trait Resolver {
-    fn guess(&self) -> Vec<&String>;
+    fn guess(&self) -> &Vec<String>;
     fn add_hint(&mut self, word: &str, hints: &Vec<Hint>);
 }
 
@@ -45,30 +45,9 @@ impl SimpleResolver {
     }
 
     fn update_with_hints(&mut self, hints: &Vec<Hint>) {
-        hints.iter().for_each(|hint| {
-            self.hints.push(hint.clone());
-        });
-    }
-
-    fn remove_word(&mut self, word: &str) {
-        if word.len() != self.width as usize {
-            return ();
-        }
-        match self.dict_words.iter().position(|r| { r == word }) {
-            Some(index) => {
-                self.dict_words.swap_remove(index);
-                ()
-            }
-            _ => (),
-        }
-    }
-}
-
-impl Resolver for SimpleResolver {
-    fn guess(&self) -> Vec<&String> {
-        self.dict_words.iter()
+        self.dict_words = self.dict_words.iter()
             .filter(|word| {
-                for hint in &self.hints {
+                for hint in hints {
                     let res = match &hint.spot {
                         Spot::None() => {
                             !word.contains(hint.letter)
@@ -92,7 +71,29 @@ impl Resolver for SimpleResolver {
                 }
                 true
             })
-            .collect()
+            .map(|w| {
+                w.clone()
+            })
+            .collect();
+    }
+
+    fn remove_word(&mut self, word: &str) {
+        if word.len() != self.width as usize {
+            return ();
+        }
+        match self.dict_words.iter().position(|r| { r == word }) {
+            Some(index) => {
+                self.dict_words.swap_remove(index);
+                ()
+            }
+            _ => (),
+        }
+    }
+}
+
+impl Resolver for SimpleResolver {
+    fn guess(&self) -> &Vec<String> {
+        &self.dict_words
     }
 
     fn add_hint(&mut self, word: &str, hints: &Vec<Hint>) {
@@ -132,28 +133,28 @@ mod tests {
         fn remove_word() {
             let mut actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string(), "asset".to_string()]);
             actual.add_hint("hello", &vec![]);
-            assert_eq!(actual.guess(), vec![&String::from("asset"), &String::from("early")]);
+            assert_eq!(actual.guess(), &vec![String::from("asset"), String::from("early")]);
         }
 
         #[test]
         fn remove_including_a() {
             let mut actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string(), "asset".to_string()]);
             actual.add_hint("dummy", &vec![Hint { letter: 'a', spot: Spot::None() }]);
-            assert_eq!(actual.guess(), vec![&String::from("hello")]);
+            assert_eq!(actual.guess(), &vec![String::from("hello")]);
         }
 
         #[test]
         fn only_including_l() {
             let mut actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string(), "asset".to_string()]);
             actual.add_hint("dummy", &vec![Hint { letter: 'l', spot: Spot::InWithout(2) }]);
-            assert_eq!(actual.guess(), vec![&String::from("early")]);
+            assert_eq!(actual.guess(), &vec![String::from("early")]);
         }
 
         #[test]
         fn at_t() {
             let mut actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string(), "asset".to_string()]);
             actual.add_hint("dummy", &vec![Hint { letter: 't', spot: Spot::At(4) }]);
-            assert_eq!(actual.guess(), vec![&String::from("asset")]);
+            assert_eq!(actual.guess(), &vec![String::from("asset")]);
         }
     }
 }
