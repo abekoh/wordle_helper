@@ -4,6 +4,7 @@ use std::io::BufRead;
 use ansi_term::Style;
 
 use clap::Parser;
+use num_format::{Locale, ToFormattedString};
 
 use wordle_solver::{Hint, Solver, Spot};
 use wordle_solver::simple::SimpleSolver;
@@ -26,7 +27,7 @@ fn main() {
     println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
 
     loop {
-        println!("There are {} words are remained.\n", solver.remining_words_length());
+        println!("There are {} words are remained.\n", solver.remining_words_length().to_formatted_string(&Locale::en));
 
         let mut state = InputState::new(config.word_length);
 
