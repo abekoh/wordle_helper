@@ -15,7 +15,7 @@ struct Config {
     #[clap(short, long, default_value_t = 5)]
     word_length: usize,
 
-    #[clap(short, long)]
+    #[clap(short, long, default_value = "data/words_alpha.txt")]
     dict_path: String,
 }
 
