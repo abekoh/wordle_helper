@@ -1,6 +1,9 @@
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
+
+use clap::Parser;
+
 use wordle_solver::{Hint, Solver, Spot};
 use wordle_solver::simple::SimpleSolver;
 
