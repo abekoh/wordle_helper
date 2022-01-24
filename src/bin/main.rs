@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
+use ansi_term::Style;
 
 use clap::Parser;
 
@@ -21,6 +22,8 @@ fn main() {
     let config = Config::parse();
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &get_words(&config.dict_path)));
+
+    println!("{}", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
 
     loop {
         println!("\nRemining words length: {}", solver.remining_words_length());
