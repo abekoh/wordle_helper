@@ -10,6 +10,7 @@ use wordle_solver::simple::SimpleSolver;
 const DICT_PATH: &str = "data/words_alpha.txt";
 
 #[derive(Parser)]
+#[clap(author, version, about, long_about = None)]
 struct Config {
     #[clap(short, long, default_value_t = 5)]
     word_length: usize,
