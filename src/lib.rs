@@ -19,7 +19,7 @@ impl Hint {
 
 pub trait Solver {
     fn guess(&self) -> &Vec<String>;
-    fn add_hint(&mut self, word: &str, hints: &Vec<Hint>);
+    fn add_hint(&mut self, word: &str, hints: &[Hint]);
     fn remining_words_length(&self) -> usize;
 }
 
@@ -43,7 +43,7 @@ impl SimpleSolver {
         }
     }
 
-    fn update_with_hints(&mut self, hints: &Vec<Hint>) {
+    fn update_with_hints(&mut self, hints: &[Hint]) {
         self.dict_words = self.dict_words.iter()
             .filter(|word| {
                 for hint in hints {
@@ -72,12 +72,11 @@ impl SimpleSolver {
 
     fn remove_word(&mut self, word: &str) {
         if word.len() != self.width as usize {
-            return ;
+            return;
         }
         match self.dict_words.iter().position(|r| { r == word }) {
             Some(index) => {
                 self.dict_words.swap_remove(index);
-                
             }
             _ => (),
         }
@@ -89,7 +88,7 @@ impl Solver for SimpleSolver {
         &self.dict_words
     }
 
-    fn add_hint(&mut self, word: &str, hints: &Vec<Hint>) {
+    fn add_hint(&mut self, word: &str, hints: &[Hint]) {
         self.remove_word(word);
         self.update_with_hints(hints);
     }
