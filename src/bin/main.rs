@@ -1,11 +1,15 @@
+#![feature(iter_zip)]
+
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
+use std::iter::zip;
+
 use ansi_term::Colour::Red;
 use ansi_term::Style;
-
 use clap::Parser;
 use num_format::{Locale, ToFormattedString};
+use num_format::Locale::hi;
 
 use wordle_solver::{Hint, Solver, Spot};
 use wordle_solver::simple::SimpleSolver;
@@ -147,6 +151,24 @@ impl InputState {
             }
         }
         Result::Ok(())
+    }
+
+    pub fn colorized_input(&self) -> Result<String, &'static str> {
+        if self.word.is_none() {
+            return Result::Err("word are empty");
+        }
+        if self.hint.is_empty() {
+            return Result::Err("hints are empty");
+        }
+        let mut chars: Vec<String> = Vec::new();
+        for (c, hint) in zip(self.word.unwrap().chars(), &self.hint) {
+            let res = match hint {
+                Hint::At(_) => format!("{}", Style::new().bold().paint(c)),
+                _ => "",
+            };
+            chars.push(res);
+        }
+        return Result::Ok(chars.join(""));
     }
 
     pub fn get(&self) -> Result<(&str, &Vec<Hint>), &'static str> {
