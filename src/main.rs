@@ -139,7 +139,7 @@ impl InputState {
             return Result::Err("hints are empty");
         }
         return Result::Ok((
-            &self.word.as_ref().unwrap(),
+            self.word.as_ref().unwrap(),
             &self.hint,
         ));
     }

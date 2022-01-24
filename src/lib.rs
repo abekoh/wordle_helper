@@ -58,7 +58,7 @@ impl SimpleSolver {
                             word.as_bytes()[*spot as usize] as char != hint.letter
                         }
                         Spot::At(at_spot) => {
-                            word.as_bytes()[at_spot.clone()] as char == hint.letter
+                            word.as_bytes()[(*at_spot)] as char == hint.letter
                         }
                     };
                     if !res {
@@ -66,21 +66,18 @@ impl SimpleSolver {
                     }
                 }
                 true
-            })
-            .map(|w| {
-                w.clone()
-            })
+            }).cloned()
             .collect();
     }
 
     fn remove_word(&mut self, word: &str) {
         if word.len() != self.width as usize {
-            return ();
+            return ;
         }
         match self.dict_words.iter().position(|r| { r == word }) {
             Some(index) => {
                 self.dict_words.swap_remove(index);
-                ()
+                
             }
             _ => (),
         }
