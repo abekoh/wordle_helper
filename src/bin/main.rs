@@ -2,7 +2,13 @@ use std::fs::File;
 use std::io;
 use std::io::BufRead;
 
+use std::iter::zip;
+use ansi_term::Color::{Green, Yellow};
+
+use ansi_term::Colour::Red;
+use ansi_term::Style;
 use clap::Parser;
+use num_format::{Locale, ToFormattedString};
 
 use wordle_solver::{Hint, Solver, Spot};
 use wordle_solver::simple::SimpleSolver;
@@ -22,25 +28,27 @@ fn main() {
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &get_words(&config.dict_path)));
 
+    println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
+
     loop {
-        println!("\nRemining words length: {}", solver.remining_words_length());
+        println!("There are {} words are remained.\n", solver.remining_words_length().to_formatted_string(&Locale::en));
 
         let mut state = InputState::new(config.word_length);
 
         loop {
-            println!("\nPlease input you guessed word:");
+            println!("Please input you guessed word:");
             let mut guessed_word = String::new();
             match io::stdin().read_line(&mut guessed_word) {
                 Ok(_) => {
                     match state.add_word(&guessed_word) {
                         Ok(_) => break,
                         Err(e) => {
-                            eprintln!("{}", e);
+                            eprintln!("{}\n", Red.paint(e));
                         }
                     }
                 }
                 Err(e) => {
-                    eprintln!("failed to input word: {}", e);
+                    eprintln!("{}\n", Red.paint(format!("failed to input word: {}", e)));
                 }
             }
         }
@@ -53,15 +61,17 @@ fn main() {
                     match state.add_hint(&hint_input) {
                         Ok(_) => break,
                         Err(e) => {
-                            eprintln!("{}", e);
+                            eprintln!("{}\n", Red.paint(e));
                         }
                     }
                 }
                 Err(e) => {
-                    eprintln!("failed to input word: {}", e);
+                    eprintln!("{}\n", Red.paint(format!("failed to input word: {}", e)));
                 }
             }
         }
+
+        println!("{}", state.colorized_input().unwrap());
 
         let (word, hints) = state.get().unwrap();
 
@@ -137,11 +147,30 @@ impl InputState {
                     self.hint.push(Hint::new(word_c, Spot::At(i)));
                 }
                 _ => {
-                    return Result::Err("input must be 1,2,3");
+                    return Result::Err("input must be 0,1,2");
                 }
             }
         }
         Result::Ok(())
+    }
+
+    pub fn colorized_input(&self) -> Result<String, &'static str> {
+        if self.word.is_none() {
+            return Result::Err("word are empty");
+        }
+        if self.hint.is_empty() {
+            return Result::Err("hints are empty");
+        }
+        let mut chars: Vec<String> = Vec::new();
+        for (c, hint) in zip(self.word.as_ref().unwrap().chars(), &self.hint) {
+            let res = match hint.spot {
+                Spot::None() => format!("{}", Style::new().bold().paint(c.to_string())),
+                Spot::InWithout(_) => format!("{}", Style::new().on(Yellow).bold().paint(c.to_string())),
+                Spot::At(_) => format!("{}", Style::new().on(Green).bold().paint(c.to_string())),
+            };
+            chars.push(res);
+        }
+        return Result::Ok(chars.join(""));
     }
 
     pub fn get(&self) -> Result<(&str, &Vec<Hint>), &'static str> {
