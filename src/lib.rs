@@ -17,21 +17,21 @@ impl Hint {
     }
 }
 
-pub trait Resolver {
+pub trait Solver {
     fn guess(&self) -> &Vec<String>;
     fn add_hint(&mut self, word: &str, hints: &Vec<Hint>);
     fn remining_words_length(&self) -> usize;
 }
 
 #[derive(Debug)]
-pub struct SimpleResolver {
+pub struct SimpleSolver {
     width: i32,
     dict_words: Vec<String>,
 }
 
-impl SimpleResolver {
-    pub fn new(width: i32, dict_words: &Vec<String>) -> SimpleResolver {
-        SimpleResolver {
+impl SimpleSolver {
+    pub fn new(width: i32, dict_words: &Vec<String>) -> SimpleSolver {
+        SimpleSolver {
             width,
             dict_words: dict_words.iter()
                 .filter(|word| {
@@ -87,7 +87,7 @@ impl SimpleResolver {
     }
 }
 
-impl Resolver for SimpleResolver {
+impl Solver for SimpleSolver {
     fn guess(&self) -> &Vec<String> {
         &self.dict_words
     }
@@ -113,14 +113,14 @@ mod tests {
 
         #[test]
         fn asset_fields() {
-            let actual = SimpleResolver::new(5, &vec!["hello".to_string(), "early".to_string()]);
+            let actual = SimpleSolver::new(5, &vec!["hello".to_string(), "early".to_string()]);
             assert_eq!(actual.width, 5);
             assert_eq!(actual.dict_words, vec!["hello", "early"]);
         }
 
         #[test]
         fn filter_word_only_length_is_5() {
-            let actual = SimpleResolver::new(5, &vec!["hello".to_string(), "dog".to_string(), "in".to_string(), "early".to_string(), "difference".to_string()]);
+            let actual = SimpleSolver::new(5, &vec!["hello".to_string(), "dog".to_string(), "in".to_string(), "early".to_string(), "difference".to_string()]);
             assert_eq!(actual.dict_words, vec!["hello", "early"]);
         }
     }
@@ -136,7 +136,7 @@ mod tests {
 
         #[test]
         fn remove_word() {
-            let mut actual = SimpleResolver::new(5, &preset_words());
+            let mut actual = SimpleSolver::new(5, &preset_words());
             actual.add_hint("hello", &vec![]);
             assert_eq!(actual.guess(), &vec![String::from("asset"), String::from("early")]);
         }
@@ -147,14 +147,14 @@ mod tests {
 
             #[test]
             fn a() {
-                let mut actual = SimpleResolver::new(5, &preset_words());
+                let mut actual = SimpleSolver::new(5, &preset_words());
                 actual.add_hint("dummy", &vec![Hint { letter: 'a', spot: Spot::None() }]);
                 assert_eq!(actual.guess(), &vec![String::from("hello")]);
             }
 
             #[test]
             fn l() {
-                let mut actual = SimpleResolver::new(5, &preset_words());
+                let mut actual = SimpleSolver::new(5, &preset_words());
                 actual.add_hint("dummy", &vec![Hint { letter: 'l', spot: Spot::None() }]);
                 assert_eq!(actual.guess(), &vec![String::from("asset")]);
             }
@@ -166,14 +166,14 @@ mod tests {
 
             #[test]
             fn l_2() {
-                let mut actual = SimpleResolver::new(5, &preset_words());
+                let mut actual = SimpleSolver::new(5, &preset_words());
                 actual.add_hint("dummy", &vec![Hint { letter: 'l', spot: Spot::InWithout(2) }]);
                 assert_eq!(actual.guess(), &vec![String::from("early")]);
             }
 
             #[test]
             fn e_0() {
-                let mut actual = SimpleResolver::new(5, &preset_words());
+                let mut actual = SimpleSolver::new(5, &preset_words());
                 actual.add_hint("dummy", &vec![Hint { letter: 'e', spot: Spot::InWithout(0) }]);
                 assert_eq!(actual.guess(), &vec![String::from("hello"), String::from("asset")]);
             }
@@ -186,7 +186,7 @@ mod tests {
 
             #[test]
             fn t_4() {
-                let mut actual = SimpleResolver::new(5, &preset_words());
+                let mut actual = SimpleSolver::new(5, &preset_words());
                 actual.add_hint("dummy", &vec![Hint { letter: 't', spot: Spot::At(4) }]);
                 assert_eq!(actual.guess(), &vec![String::from("asset")]);
             }
@@ -198,7 +198,7 @@ mod tests {
 
             #[test]
             fn multiple_1() {
-                let mut actual = SimpleResolver::new(5, &vec![
+                let mut actual = SimpleSolver::new(5, &vec![
                     "hello".to_string(),
                     "early".to_string(),
                     "asset".to_string(),

@@ -1,4 +1,4 @@
-# wordle_resolver
+# wordle_solver
 
 ## dictionary
 

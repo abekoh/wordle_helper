@@ -2,15 +2,15 @@ use std::fs::File;
 use std::io;
 use std::io::BufRead;
 
-use wordle_resolver::{Hint, Resolver, SimpleResolver, Spot};
+use wordle_solver::{Hint, Solver, SimpleSolver, Spot};
 
 const DICT_PATH: &str = "data/words_alpha.txt";
 
 fn main() {
-    let mut resolver = SimpleResolver::new(5, &get_words());
+    let mut solver = SimpleSolver::new(5, &get_words());
 
     loop {
-        println!("\nRemining words length: {}", resolver.remining_words_length());
+        println!("\nRemining words length: {}", solver.remining_words_length());
 
         let mut state = InputState::new(5);
 
@@ -52,9 +52,9 @@ fn main() {
 
         let (word, hints) = state.get().unwrap();
 
-        resolver.add_hint(word, hints);
+        solver.add_hint(word, hints);
 
-        for guessed in resolver.guess() {
+        for guessed in solver.guess() {
             println!("{}", guessed);
         }
     }
