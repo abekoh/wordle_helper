@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
+use ansi_term::Colour::Red;
 use ansi_term::Style;
 
 use clap::Parser;
@@ -32,19 +33,19 @@ fn main() {
         let mut state = InputState::new(config.word_length);
 
         loop {
-            println!("\nPlease input you guessed word:");
+            println!("Please input you guessed word:");
             let mut guessed_word = String::new();
             match io::stdin().read_line(&mut guessed_word) {
                 Ok(_) => {
                     match state.add_word(&guessed_word) {
                         Ok(_) => break,
                         Err(e) => {
-                            eprintln!("{}", e);
+                            eprintln!("{}\n", Red.paint(e));
                         }
                     }
                 }
                 Err(e) => {
-                    eprintln!("failed to input word: {}", e);
+                    eprintln!("{}\n", Red.paint(format!("failed to input word: {}", e)));
                 }
             }
         }
