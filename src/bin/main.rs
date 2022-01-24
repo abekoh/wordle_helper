@@ -22,7 +22,7 @@ struct Config {
 fn main() {
     let config = Config::parse();
 
-    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(5, &get_words()));
+    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &get_words()));
 
     loop {
         println!("\nRemining words length: {}", solver.remining_words_length());
