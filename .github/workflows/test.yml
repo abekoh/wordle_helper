@@ -20,7 +20,8 @@ jobs:
           restore-keys: ${{ runner.os }}-cargo-
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: nightly
+          override: true
           components: clippy
       - uses: actions-rs/clippy-check@v1
         with:
