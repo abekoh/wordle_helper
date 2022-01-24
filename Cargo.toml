@@ -1,6 +1,7 @@
 [package]
 name = "wordle_solver"
 version = "0.1.0"
+description = "Solve a wordie question with CLI."
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
