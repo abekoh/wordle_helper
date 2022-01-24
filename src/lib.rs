@@ -9,8 +9,8 @@ pub enum Spot {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Hint {
-    letter: char,
-    spot: Spot,
+    pub letter: char,
+    pub spot: Spot,
 }
 
 impl Hint {

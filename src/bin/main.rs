@@ -3,13 +3,13 @@
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
+
 use std::iter::zip;
 
 use ansi_term::Colour::Red;
 use ansi_term::Style;
 use clap::Parser;
 use num_format::{Locale, ToFormattedString};
-use num_format::Locale::hi;
 
 use wordle_solver::{Hint, Solver, Spot};
 use wordle_solver::simple::SimpleSolver;
@@ -161,10 +161,10 @@ impl InputState {
             return Result::Err("hints are empty");
         }
         let mut chars: Vec<String> = Vec::new();
-        for (c, hint) in zip(self.word.unwrap().chars(), &self.hint) {
-            let res = match hint {
-                Hint::At(_) => format!("{}", Style::new().bold().paint(c)),
-                _ => "",
+        for (c, hint) in zip(self.word.as_ref().unwrap().chars(), &self.hint) {
+            let res = match hint.spot {
+                Spot::None() => format!("{}", Style::new().bold().paint(c.to_string())),
+                _ => "".to_string(),
             };
             chars.push(res);
         }
