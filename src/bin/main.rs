@@ -23,10 +23,10 @@ fn main() {
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &get_words(&config.dict_path)));
 
-    println!("{}", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
+    println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
 
     loop {
-        println!("\nRemining words length: {}", solver.remining_words_length());
+        println!("There are {} words are remained.\n", solver.remining_words_length());
 
         let mut state = InputState::new(config.word_length);
 
