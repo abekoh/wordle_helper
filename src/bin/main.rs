@@ -58,12 +58,12 @@ fn main() {
                     match state.add_hint(&hint_input) {
                         Ok(_) => break,
                         Err(e) => {
-                            eprintln!("{}", e);
+                            eprintln!("{}\n", Red.paint(e));
                         }
                     }
                 }
                 Err(e) => {
-                    eprintln!("failed to input word: {}", e);
+                    eprintln!("{}\n", Red.paint(format!("failed to input word: {}", e)));
                 }
             }
         }
@@ -142,7 +142,7 @@ impl InputState {
                     self.hint.push(Hint::new(word_c, Spot::At(i)));
                 }
                 _ => {
-                    return Result::Err("input must be 1,2,3");
+                    return Result::Err("input must be 0,1,2");
                 }
             }
         }
