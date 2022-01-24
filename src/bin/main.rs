@@ -9,7 +9,18 @@ use wordle_solver::simple::SimpleSolver;
 
 const DICT_PATH: &str = "data/words_alpha.txt";
 
+#[derive(Parser)]
+struct Config {
+    #[clap(short, long, default_value_t = 5)]
+    word_length: usize,
+
+    #[clap(short, long)]
+    dict_path: String,
+}
+
 fn main() {
+    let config = Config::parse();
+
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(5, &get_words()));
 
     loop {
