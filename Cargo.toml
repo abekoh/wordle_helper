@@ -1,5 +1,5 @@
 [package]
-name = "wordle_resolver"
+name = "wordle_solver"
 version = "0.1.0"
 edition = "2021"
 
