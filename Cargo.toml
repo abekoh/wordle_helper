@@ -1,8 +1,16 @@
 [package]
-name = "wordle_solver"
+name = "wordle-solver"
 version = "0.1.0"
+description = "Solve a wordie question with CLI."
 edition = "2021"
+repository = "https://github.com/abekoh/wordle_solver"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+clap = { version = "3", features = ["derive"] }
+
+[[bin]]
+name = "wordie-solver"
+path = "src/bin/main.rs"

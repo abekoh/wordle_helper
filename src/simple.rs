@@ -2,17 +2,17 @@ use crate::{Hint, Solver, Spot};
 
 #[derive(Debug)]
 pub struct SimpleSolver {
-    width: i32,
+    width: usize,
     dict_words: Vec<String>,
 }
 
 impl SimpleSolver {
-    pub fn new(width: i32, dict_words: &Vec<String>) -> SimpleSolver {
+    pub fn new(width: usize, dict_words: &Vec<String>) -> SimpleSolver {
         SimpleSolver {
             width,
             dict_words: dict_words.iter()
                 .filter(|word| {
-                    word.len() == width as usize
+                    word.len() == width
                 })
                 .map(|word| {
                     word.to_string()
@@ -48,7 +48,7 @@ impl SimpleSolver {
     }
 
     fn remove_word(&mut self, word: &str) {
-        if word.len() != self.width as usize {
+        if word.len() != self.width {
             return;
         }
         match self.dict_words.iter().position(|r| { r == word }) {

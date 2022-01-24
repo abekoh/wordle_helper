@@ -33,3 +33,6 @@ jobs:
         with:
           command: build
           args: --release --all-features
+      - name: test command
+        run: |
+          target/release/wordie-solver -V
