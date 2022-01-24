@@ -7,8 +7,6 @@ use clap::Parser;
 use wordle_solver::{Hint, Solver, Spot};
 use wordle_solver::simple::SimpleSolver;
 
-const DICT_PATH: &str = "data/words_alpha.txt";
-
 #[derive(Parser)]
 #[clap(version, about, long_about = None)]
 struct Config {
@@ -22,12 +20,12 @@ struct Config {
 fn main() {
     let config = Config::parse();
 
-    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &get_words()));
+    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &get_words(&config.dict_path)));
 
     loop {
         println!("\nRemining words length: {}", solver.remining_words_length());
 
-        let mut state = InputState::new(5);
+        let mut state = InputState::new(config.word_length);
 
         loop {
             println!("\nPlease input you guessed word:");
@@ -75,11 +73,11 @@ fn main() {
     }
 }
 
-fn get_words() -> Vec<String> {
-    let file = match File::open(DICT_PATH) {
+fn get_words(dict_path: &str) -> Vec<String> {
+    let file = match File::open(dict_path) {
         Ok(v) => v,
         Err(e) => {
-            eprintln!("failed to load '{}': {}", DICT_PATH, e);
+            eprintln!("failed to load '{}': {}", dict_path, e);
             std::process::exit(1);
         }
     };
