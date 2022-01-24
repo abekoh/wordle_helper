@@ -1,13 +1,13 @@
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
-
-use wordle_solver::{Hint, Solver, SimpleSolver, Spot};
+use wordle_solver::{Hint, Solver, Spot};
+use wordle_solver::simple::SimpleSolver;
 
 const DICT_PATH: &str = "data/words_alpha.txt";
 
 fn main() {
-    let mut solver = SimpleSolver::new(5, &get_words());
+    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(5, &get_words()));
 
     loop {
         println!("\nRemining words length: {}", solver.remining_words_length());
