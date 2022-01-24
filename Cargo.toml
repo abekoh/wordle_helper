@@ -13,3 +13,4 @@ clap = { version = "3", features = ["derive"] }
 
 [[bin]]
 name = "wordie-solver"
+path = "src/bin/main.rs"
