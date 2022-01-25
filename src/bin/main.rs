@@ -3,7 +3,7 @@ use std::io;
 use std::io::BufRead;
 
 use std::iter::zip;
-use ansi_term::Color::{Green, Yellow};
+use ansi_term::Color::{Green, RGB, White, Yellow};
 
 use ansi_term::Colour::Red;
 use ansi_term::Style;
@@ -168,9 +168,9 @@ impl InputState {
         let mut chars: Vec<String> = Vec::new();
         for (c, hint) in zip(self.word.as_ref().unwrap().chars(), &self.hint) {
             let res = match hint.spot {
-                Spot::None() => format!("{}", Style::new().bold().paint(c.to_string())),
-                Spot::InWithout(_) => format!("{}", Style::new().on(Yellow).bold().paint(c.to_string())),
-                Spot::At(_) => format!("{}", Style::new().on(Green).bold().paint(c.to_string())),
+                Spot::None() => format!("{}", Style::new().on(RGB(58, 58, 60)).fg(White).bold().paint(c.to_string())),
+                Spot::InWithout(_) => format!("{}", Style::new().on(RGB(180, 159, 58)).fg(White).bold().paint(c.to_string())),
+                Spot::At(_) => format!("{}", Style::new().on(RGB(83, 141, 78)).fg(White).bold().paint(c.to_string())),
             };
             chars.push(res);
         }
