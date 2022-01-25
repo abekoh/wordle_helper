@@ -6,7 +6,7 @@ use std::iter::zip;
 use ansi_term::Color::{RGB, White};
 use ansi_term::Style;
 use clap::Parser;
-use dialoguer::Input;
+use dialoguer::{Confirm, Input};
 use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
 
@@ -33,51 +33,57 @@ fn main() {
     loop {
         println!("There are {} words are remained.\n", solver.remining_words_length().to_formatted_string(&Locale::en));
 
-        let mut state = InputState::new(config.word_length);
+        loop {
+            let mut state = InputState::new(config.word_length);
 
-        let guessed_word = Input::with_theme(&ColorfulTheme::default())
-            .with_prompt("Guess word")
-            .validate_with({
-                move |input: &String| -> Result<(), &str> {
-                    if input.len() == config.word_length {
+            let guessed_word = Input::with_theme(&ColorfulTheme::default())
+                .with_prompt("Guess word")
+                .validate_with({
+                    move |input: &String| -> Result<(), &str> {
+                        if input.len() == config.word_length {
+                            Ok(())
+                        } else {
+                            Err("invalid word length")
+                        }
+                    }
+                })
+                .interact_text()
+                .unwrap();
+            state.add_word(&guessed_word).unwrap();
+
+            let hint_input = Input::with_theme(&ColorfulTheme::default())
+                .with_prompt("Hint")
+                .validate_with({
+                    move |input: &String| -> Result<(), &str> {
+                        if input.len() != config.word_length {
+                            return Err("invalid length");
+                        }
+                        if input.chars()
+                            .filter(move |c| {
+                                *c == '0' || *c == '1' || *c == '2'
+                            })
+                            .count() != config.word_length {
+                            return Err("invalid number contains");
+                        }
                         Ok(())
-                    } else {
-                        Err("invalid word length")
                     }
-                }
-            })
-            .interact_text()
-            .unwrap();
+                })
+                .interact_text()
+                .unwrap();
+            state.add_hint(&hint_input).unwrap();
 
-        state.add_word(&guessed_word).unwrap();
+            println!("{}", state.colorized_input().unwrap());
 
-        let hint_input = Input::with_theme(&ColorfulTheme::default())
-            .with_prompt("Hint")
-            .validate_with({
-                move |input: &String| -> Result<(), &str> {
-                    if input.len() != config.word_length {
-                        return Err("invalid length");
-                    }
-                    if input.chars()
-                        .filter(move |c| {
-                            *c == '0' || *c == '1' || *c == '2'
-                        })
-                        .count() != config.word_length {
-                        return Err("invalid number contains");
-                    }
-                    Ok(())
-                }
-            })
-            .interact_text()
-            .unwrap();
-
-        state.add_hint(&hint_input).unwrap();
-
-        println!("{}", state.colorized_input().unwrap());
-
-        let (word, hints) = state.get().unwrap();
-
-        solver.add_hint(word, hints);
+            if Confirm::with_theme(&ColorfulTheme::default())
+                .with_prompt("Is OK?")
+                .default(true)
+                .interact()
+                .unwrap() {
+                let (word, hints) = state.get().unwrap();
+                solver.add_hint(word, hints);
+                break;
+            }
+        }
 
         for guessed in solver.guess() {
             println!("{}", guessed);
