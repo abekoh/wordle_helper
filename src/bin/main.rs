@@ -1,10 +1,9 @@
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
-
 use std::iter::zip;
-use ansi_term::Color::{Green, RGB, White, Yellow};
 
+use ansi_term::Color::{Green, RGB, White, Yellow};
 use ansi_term::Colour::Red;
 use ansi_term::Style;
 use clap::Parser;
