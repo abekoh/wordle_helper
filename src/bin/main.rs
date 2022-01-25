@@ -75,24 +75,6 @@ fn main() {
 
         state.add_hint(&hint_input).unwrap();
 
-        loop {
-            println!("\nPlease input result (0=not matched, 1=any, 2=exact):");
-            let mut hint_input = String::new();
-            match io::stdin().read_line(&mut hint_input) {
-                Ok(_) => {
-                    match state.add_hint(&hint_input) {
-                        Ok(_) => break,
-                        Err(e) => {
-                            eprintln!("{}\n", Red.paint(e));
-                        }
-                    }
-                }
-                Err(e) => {
-                    eprintln!("{}\n", Red.paint(format!("failed to input word: {}", e)));
-                }
-            }
-        }
-
         println!("{}", state.colorized_input().unwrap());
 
         let (word, hints) = state.get().unwrap();
