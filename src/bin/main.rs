@@ -1,13 +1,13 @@
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
-
 use std::iter::zip;
-use ansi_term::Color::{Green, Yellow};
 
-use ansi_term::Colour::Red;
+use ansi_term::Color::{RGB, White};
 use ansi_term::Style;
 use clap::Parser;
+use dialoguer::{Confirm, Input};
+use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
 
 use wordle_solver::{Hint, Solver, Spot};
@@ -33,49 +33,57 @@ fn main() {
     loop {
         println!("There are {} words are remained.\n", solver.remining_words_length().to_formatted_string(&Locale::en));
 
-        let mut state = InputState::new(config.word_length);
-
         loop {
-            println!("Please input you guessed word:");
-            let mut guessed_word = String::new();
-            match io::stdin().read_line(&mut guessed_word) {
-                Ok(_) => {
-                    match state.add_word(&guessed_word) {
-                        Ok(_) => break,
-                        Err(e) => {
-                            eprintln!("{}\n", Red.paint(e));
+            let mut state = InputState::new(config.word_length);
+
+            let guessed_word = Input::with_theme(&ColorfulTheme::default())
+                .with_prompt("Guess word")
+                .validate_with({
+                    move |input: &String| -> Result<(), &str> {
+                        if input.len() == config.word_length {
+                            Ok(())
+                        } else {
+                            Err("invalid word length")
                         }
                     }
-                }
-                Err(e) => {
-                    eprintln!("{}\n", Red.paint(format!("failed to input word: {}", e)));
-                }
-            }
-        }
+                })
+                .interact_text()
+                .unwrap();
+            state.add_word(&guessed_word).unwrap();
 
-        loop {
-            println!("\nPlease input result (0=not matched, 1=any, 2=exact):");
-            let mut hint_input = String::new();
-            match io::stdin().read_line(&mut hint_input) {
-                Ok(_) => {
-                    match state.add_hint(&hint_input) {
-                        Ok(_) => break,
-                        Err(e) => {
-                            eprintln!("{}\n", Red.paint(e));
+            let hint_input = Input::with_theme(&ColorfulTheme::default())
+                .with_prompt("Hint")
+                .validate_with({
+                    move |input: &String| -> Result<(), &str> {
+                        if input.len() != config.word_length {
+                            return Err("invalid length");
                         }
+                        if input.chars()
+                            .filter(move |c| {
+                                *c == '0' || *c == '1' || *c == '2'
+                            })
+                            .count() != config.word_length {
+                            return Err("invalid number contains");
+                        }
+                        Ok(())
                     }
-                }
-                Err(e) => {
-                    eprintln!("{}\n", Red.paint(format!("failed to input word: {}", e)));
-                }
+                })
+                .interact_text()
+                .unwrap();
+            state.add_hint(&hint_input).unwrap();
+
+            println!("{}", state.colorized_input().unwrap());
+
+            if Confirm::with_theme(&ColorfulTheme::default())
+                .with_prompt("Is OK?")
+                .default(true)
+                .interact()
+                .unwrap() {
+                let (word, hints) = state.get().unwrap();
+                solver.add_hint(word, hints);
+                break;
             }
         }
-
-        println!("{}", state.colorized_input().unwrap());
-
-        let (word, hints) = state.get().unwrap();
-
-        solver.add_hint(word, hints);
 
         for guessed in solver.guess() {
             println!("{}", guessed);
@@ -164,9 +172,9 @@ impl InputState {
         let mut chars: Vec<String> = Vec::new();
         for (c, hint) in zip(self.word.as_ref().unwrap().chars(), &self.hint) {
             let res = match hint.spot {
-                Spot::None() => format!("{}", Style::new().bold().paint(c.to_string())),
-                Spot::InWithout(_) => format!("{}", Style::new().on(Yellow).bold().paint(c.to_string())),
-                Spot::At(_) => format!("{}", Style::new().on(Green).bold().paint(c.to_string())),
+                Spot::None() => format!("{}", Style::new().on(RGB(58, 58, 60)).fg(White).bold().paint(c.to_string())),
+                Spot::InWithout(_) => format!("{}", Style::new().on(RGB(180, 159, 58)).fg(White).bold().paint(c.to_string())),
+                Spot::At(_) => format!("{}", Style::new().on(RGB(83, 141, 78)).fg(White).bold().paint(c.to_string())),
             };
             chars.push(res);
         }
