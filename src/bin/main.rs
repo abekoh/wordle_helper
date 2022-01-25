@@ -53,6 +53,28 @@ fn main() {
 
         state.add_word(&guessed_word).unwrap();
 
+        let hint_input = Input::with_theme(&ColorfulTheme::default())
+            .with_prompt("Hint")
+            .validate_with({
+                move |input: &String| -> Result<(), &str> {
+                    if input.len() != config.word_length {
+                        return Err("invalid length");
+                    }
+                    if input.chars()
+                        .filter(move |c| {
+                            *c == '0' || *c == '1' || *c == '2'
+                        })
+                        .count() != config.word_length {
+                        return Err("invalid number contains");
+                    }
+                    Ok(())
+                }
+            })
+            .interact_text()
+            .unwrap();
+
+        state.add_hint(&hint_input).unwrap();
+
         loop {
             println!("\nPlease input result (0=not matched, 1=any, 2=exact):");
             let mut hint_input = String::new();
