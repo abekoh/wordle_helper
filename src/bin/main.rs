@@ -8,6 +8,8 @@ use ansi_term::Color::{Green, Yellow};
 use ansi_term::Colour::Red;
 use ansi_term::Style;
 use clap::Parser;
+use dialoguer::Input;
+use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
 
 use wordle_solver::{Hint, Solver, Spot};
@@ -35,23 +37,21 @@ fn main() {
 
         let mut state = InputState::new(config.word_length);
 
-        loop {
-            println!("Please input you guessed word:");
-            let mut guessed_word = String::new();
-            match io::stdin().read_line(&mut guessed_word) {
-                Ok(_) => {
-                    match state.add_word(&guessed_word) {
-                        Ok(_) => break,
-                        Err(e) => {
-                            eprintln!("{}\n", Red.paint(e));
-                        }
+        let guessed_word = Input::with_theme(&ColorfulTheme::default())
+            .with_prompt("Guess word")
+            .validate_with({
+                move |input: &String| -> Result<(), &str> {
+                    if input.len() == config.word_length {
+                        Ok(())
+                    } else {
+                        Err("invalid word length")
                     }
                 }
-                Err(e) => {
-                    eprintln!("{}\n", Red.paint(format!("failed to input word: {}", e)));
-                }
-            }
-        }
+            })
+            .interact_text()
+            .unwrap();
+
+        state.add_word(&guessed_word).unwrap();
 
         loop {
             println!("\nPlease input result (0=not matched, 1=any, 2=exact):");

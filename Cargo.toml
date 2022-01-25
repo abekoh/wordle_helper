@@ -12,7 +12,7 @@ license = "MIT"
 clap = { version = "3", features = ["derive"] }
 ansi_term = "^0.12.1"
 num-format = "^0.4.0"
-dialoguer = "^0.5.1"
+dialoguer = "^0.9.0"
 
 [[bin]]
 name = "wordie-solver"
