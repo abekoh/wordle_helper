@@ -100,7 +100,7 @@ fn main() {
             }
         }
 
-        for guessed in solver.guess() {
+        for guessed in solver.suggest() {
             println!("{}", guessed);
         }
     }
