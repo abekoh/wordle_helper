@@ -1,4 +1,3 @@
-use num_format::Locale::hi;
 use crate::{Hint, Solver, Spot};
 
 #[derive(Debug)]
@@ -21,8 +20,23 @@ impl SimpleSolver {
         }
     }
 
-    fn shrink_hints(&self, hints: &'a [Hint]) -> &'a[Hint] {
-        hints
+    fn shrink_hints(&self, hints: &[Hint]) -> Vec<Hint> {
+        let mut results: Vec<Hint> = Vec::new();
+        for hint in hints {
+            if hint.spot == Spot::None()
+                && hints
+                .iter()
+                .filter(|h| {
+                    match h.spot {
+                        Spot::At(_) => h.letter == hint.letter,
+                        _ => false,
+                    }
+                }).count() > 0 {
+                continue;
+            }
+            results.push(hint.clone());
+        }
+        return results;
     }
 
     fn update_with_hints(&mut self, hints: &[Hint]) {
