@@ -166,7 +166,7 @@ impl InputState {
         Result::Ok(())
     }
 
-    pub fn colorized_input(&self) -> Result<String, &'static str> {
+    pub fn colorized(&self) -> Result<String, &'static str> {
         if self.word.is_none() {
             return Result::Err("word are empty");
         }
@@ -215,14 +215,14 @@ impl InputStates {
     pub fn preview(&self, staged_state: &InputState) -> Result<String, &'static str> {
         let mut results: Vec<String> = Vec::new();
         for state in &self.states {
-            match state.colorized_input() {
+            match state.colorized() {
                 Ok(s) => results.push(s),
                 Err(e) => {
                     return Err(e);
                 }
             }
         }
-        match staged_state.colorized_input() {
+        match staged_state.colorized() {
             Ok(s) => results.push(s),
             Err(e) => {
                 return Err(e);
