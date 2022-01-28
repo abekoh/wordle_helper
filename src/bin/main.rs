@@ -4,7 +4,7 @@ use std::io::BufRead;
 use std::iter::zip;
 
 use ansi_term::Color::{RGB, White};
-use ansi_term::Style;
+use ansi_term::{Colour, Style};
 use clap::Parser;
 use dialoguer::{Confirm, Input};
 use dialoguer::theme::ColorfulTheme;
@@ -133,6 +133,10 @@ struct InputState {
     is_correct: bool,
 }
 
+const BACK_GREEN: Colour = RGB(83, 141, 78);
+const BACK_YELLOW: Colour = RGB(180, 159, 58);
+const BACK_GRAY: Colour = RGB(58, 58, 60);
+
 impl InputState {
     pub fn new(width: usize) -> Self {
         InputState {
@@ -188,7 +192,7 @@ impl InputState {
             return Result::Err("word are empty");
         }
         if self.is_correct {
-            return Result::Ok(format!("{}", Style::new().on(RGB(83, 141, 78)).fg(White).bold().paint(self.word.as_ref().unwrap())));
+            return Result::Ok(format!("{}", Style::new().on(BACK_GREEN).fg(White).bold().paint(self.word.as_ref().unwrap())));
         }
         if self.hint.is_empty() {
             return Result::Err("hints are empty");
@@ -196,9 +200,9 @@ impl InputState {
         let mut chars: Vec<String> = Vec::new();
         for (c, hint) in zip(self.word.as_ref().unwrap().chars(), &self.hint) {
             let res = match hint.spot {
-                Spot::None() => format!("{}", Style::new().on(RGB(58, 58, 60)).fg(White).bold().paint(c.to_string())),
-                Spot::InWithout(_) => format!("{}", Style::new().on(RGB(180, 159, 58)).fg(White).bold().paint(c.to_string())),
-                Spot::At(_) => format!("{}", Style::new().on(RGB(83, 141, 78)).fg(White).bold().paint(c.to_string())),
+                Spot::None() => format!("{}", Style::new().on(BACK_GRAY).fg(White).bold().paint(c.to_string())),
+                Spot::InWithout(_) => format!("{}", Style::new().on(BACK_YELLOW).fg(White).bold().paint(c.to_string())),
+                Spot::At(_) => format!("{}", Style::new().on(BACK_GREEN).fg(White).bold().paint(c.to_string())),
             };
             chars.push(res);
         }
