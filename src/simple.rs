@@ -70,7 +70,7 @@ impl Solver for SimpleSolver {
         self.update_with_hints(hints);
     }
 
-    fn remaining_words_length(&self) -> usize {
+    fn remained_words_length(&self) -> usize {
         self.dict_words.len()
     }
 }

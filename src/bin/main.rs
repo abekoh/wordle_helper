@@ -32,7 +32,7 @@ fn main() {
     println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
 
     loop {
-        println!("There are {} words are remained.\n", solver.remaining_words_length().to_formatted_string(&Locale::en));
+        println!("There are {} words are remained.\n", solver.remained_words_length().to_formatted_string(&Locale::en));
 
         loop {
             let mut state = InputState::new(config.word_length);
