@@ -4,7 +4,7 @@ use std::io::BufRead;
 use std::iter::zip;
 
 use ansi_term::Color::{RGB, White};
-use ansi_term::Style;
+use ansi_term::{Colour, Style};
 use clap::Parser;
 use dialoguer::{Confirm, Input};
 use dialoguer::theme::ColorfulTheme;
@@ -32,7 +32,7 @@ fn main() {
     println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
 
     loop {
-        println!("There are {} words are remained.\n", solver.remaining_words_length().to_formatted_string(&Locale::en));
+        println!("There are {} words are remained.\n", solver.remained_words_length().to_formatted_string(&Locale::en));
 
         loop {
             let mut state = InputState::new(config.word_length);
@@ -51,6 +51,17 @@ fn main() {
                 .interact_text()
                 .unwrap();
             state.add_word(&guessed_word).unwrap();
+
+            if Confirm::with_theme(&ColorfulTheme::default())
+                .with_prompt("Correct?")
+                .interact()
+                .unwrap()
+            {
+                state.correct();
+                println!("{}\n", Style::new().bold().paint("Congratulation!!"));
+                println!("{}", states.preview(&state).unwrap());
+                std::process::exit(0);
+            }
 
             let hint_input = Input::with_theme(&ColorfulTheme::default())
                 .with_prompt("Hint")
@@ -119,7 +130,12 @@ struct InputState {
     width: usize,
     word: Option<String>,
     hint: Vec<Hint>,
+    is_correct: bool,
 }
+
+const BACK_GREEN: Colour = RGB(83, 141, 78);
+const BACK_YELLOW: Colour = RGB(180, 159, 58);
+const BACK_GRAY: Colour = RGB(58, 58, 60);
 
 impl InputState {
     pub fn new(width: usize) -> Self {
@@ -127,6 +143,7 @@ impl InputState {
             width,
             word: None,
             hint: vec![],
+            is_correct: false,
         }
     }
 
@@ -166,9 +183,16 @@ impl InputState {
         Result::Ok(())
     }
 
+    pub fn correct(&mut self) {
+        self.is_correct = true;
+    }
+
     pub fn colorized(&self) -> Result<String, &'static str> {
         if self.word.is_none() {
             return Result::Err("word are empty");
+        }
+        if self.is_correct {
+            return Result::Ok(format!("{}", Style::new().on(BACK_GREEN).fg(White).bold().paint(self.word.as_ref().unwrap())));
         }
         if self.hint.is_empty() {
             return Result::Err("hints are empty");
@@ -176,9 +200,9 @@ impl InputState {
         let mut chars: Vec<String> = Vec::new();
         for (c, hint) in zip(self.word.as_ref().unwrap().chars(), &self.hint) {
             let res = match hint.spot {
-                Spot::None() => format!("{}", Style::new().on(RGB(58, 58, 60)).fg(White).bold().paint(c.to_string())),
-                Spot::InWithout(_) => format!("{}", Style::new().on(RGB(180, 159, 58)).fg(White).bold().paint(c.to_string())),
-                Spot::At(_) => format!("{}", Style::new().on(RGB(83, 141, 78)).fg(White).bold().paint(c.to_string())),
+                Spot::None() => format!("{}", Style::new().on(BACK_GRAY).fg(White).bold().paint(c.to_string())),
+                Spot::InWithout(_) => format!("{}", Style::new().on(BACK_YELLOW).fg(White).bold().paint(c.to_string())),
+                Spot::At(_) => format!("{}", Style::new().on(BACK_GREEN).fg(White).bold().paint(c.to_string())),
             };
             chars.push(res);
         }
