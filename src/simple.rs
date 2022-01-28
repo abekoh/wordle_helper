@@ -1,3 +1,4 @@
+use num_format::Locale::hi;
 use crate::{Hint, Solver, Spot};
 
 #[derive(Debug)]
@@ -20,10 +21,14 @@ impl SimpleSolver {
         }
     }
 
+    fn shrink_hints(&self, hints: &'a [Hint]) -> &'a[Hint] {
+        hints
+    }
+
     fn update_with_hints(&mut self, hints: &[Hint]) {
         self.dict_words = self.dict_words.iter()
             .filter(|word| {
-                for hint in hints {
+                for hint in self.shrink_hints(hints) {
                     let res = match &hint.spot {
                         Spot::None() => {
                             !word.contains(hint.letter)
