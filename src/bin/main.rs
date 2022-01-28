@@ -27,6 +27,7 @@ fn main() {
     let config = Config::parse();
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &get_words(&config.dict_path)));
+    let mut states: InputStates = InputStates::new();
 
     println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
 
@@ -72,15 +73,18 @@ fn main() {
                 .unwrap();
             state.add_hint(&hint_input).unwrap();
 
-            println!("{}", state.colorized_input().unwrap());
+
+            println!("{}", states.preview(&state).unwrap());
 
             if Confirm::with_theme(&ColorfulTheme::default())
                 .with_prompt("Is OK?")
                 .default(true)
                 .interact()
-                .unwrap() {
+                .unwrap()
+            {
                 let (word, hints) = state.get().unwrap();
                 solver.add_hint(word, hints);
+                states.add(state);
                 break;
             }
         }
@@ -197,6 +201,35 @@ impl InputState {
 
 struct InputStates {
     states: Vec<InputState>,
+}
+
+impl InputStates {
+    pub fn new() -> Self {
+        InputStates { states: Vec::new() }
+    }
+
+    pub fn add(&mut self, state: InputState) {
+        self.states.push(state)
+    }
+
+    pub fn preview(&self, staged_state: &InputState) -> Result<String, &'static str> {
+        let mut results: Vec<String> = Vec::new();
+        for state in &self.states {
+            match state.colorized_input() {
+                Ok(s) => results.push(s),
+                Err(e) => {
+                    return Err(e);
+                }
+            }
+        }
+        match staged_state.colorized_input() {
+            Ok(s) => results.push(s),
+            Err(e) => {
+                return Err(e);
+            }
+        }
+        Ok(results.join("\n"))
+    }
 }
 
 #[cfg(test)]
