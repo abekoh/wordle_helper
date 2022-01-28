@@ -131,6 +131,22 @@ mod tests {
                 actual.add_hint("dummy", &vec![Hint { letter: 'l', spot: Spot::None() }]);
                 assert_eq!(actual.guess(), &vec![String::from("asset")]);
             }
+
+            #[test]
+            fn none_but_include() {
+                let mut actual = SimpleSolver::new(
+                    5,
+                    &vec!["boost".to_string()],
+                );
+                actual.add_hint("robot", &vec![
+                    Hint { letter: 'r', spot: Spot::None() },
+                    Hint { letter: 'o', spot: Spot::At(1) },
+                    Hint { letter: 'b', spot: Spot::None() },
+                    Hint { letter: 'o', spot: Spot::None() },
+                    Hint { letter: 't', spot: Spot::At(4) },
+                ]);
+                assert_eq!(actual.guess(), &vec![String::from("boost")]);
+            }
         }
 
         #[cfg(test)]
