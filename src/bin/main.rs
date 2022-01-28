@@ -58,7 +58,9 @@ fn main() {
                 .interact()
                 .unwrap()
             {
+                state.correct();
                 println!("{}\n", Style::new().bold().paint("Congratulation!!"));
+                println!("{}", states.preview(&state).unwrap());
                 std::process::exit(0);
             }
 
@@ -129,6 +131,7 @@ struct InputState {
     width: usize,
     word: Option<String>,
     hint: Vec<Hint>,
+    is_correct: bool,
 }
 
 impl InputState {
@@ -137,6 +140,7 @@ impl InputState {
             width,
             word: None,
             hint: vec![],
+            is_correct: false,
         }
     }
 
@@ -176,9 +180,16 @@ impl InputState {
         Result::Ok(())
     }
 
+    pub fn correct(&mut self) {
+        self.is_correct = true;
+    }
+
     pub fn colorized(&self) -> Result<String, &'static str> {
         if self.word.is_none() {
             return Result::Err("word are empty");
+        }
+        if self.is_correct {
+            return Result::Ok(format!("{}", Style::new().on(RGB(83, 141, 78)).fg(White).bold().paint(self.word.as_ref().unwrap())));
         }
         if self.hint.is_empty() {
             return Result::Err("hints are empty");
