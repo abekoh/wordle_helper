@@ -172,16 +172,16 @@ mod tests {
             fn none_but_include() {
                 let mut actual = SimpleSolver::new(
                     5,
-                    &vec!["boost".to_string()],
+                    &vec!["early".to_string()],
                 );
                 actual.add_hint("robot", &vec![
-                    Hint { letter: 'r', spot: Spot::None() },
-                    Hint { letter: 'o', spot: Spot::At(1) },
-                    Hint { letter: 'b', spot: Spot::None() },
-                    Hint { letter: 'o', spot: Spot::None() },
-                    Hint { letter: 't', spot: Spot::At(4) },
+                    Hint { letter: 's', spot: Spot::None() },
+                    Hint { letter: 'k', spot: Spot::None() },
+                    Hint { letter: 'i', spot: Spot::None() },
+                    Hint { letter: 'l', spot: Spot::At(3) },
+                    Hint { letter: 'l', spot: Spot::None() },
                 ]);
-                assert_eq!(actual.guess(), &vec![String::from("boost")]);
+                assert_eq!(actual.guess(), &vec![String::from("early")]);
             }
         }
 
