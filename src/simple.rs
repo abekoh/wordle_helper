@@ -42,7 +42,7 @@ impl SimpleSolver {
     fn update_with_hints(&mut self, hints: &[Hint]) {
         self.dict_words = self.dict_words.iter()
             .filter(|word| {
-                for hint in self.shrink_hints(hints) {
+                for hint in Self::shrink_hints(hints) {
                     let res = match &hint.spot {
                         Spot::None() => {
                             !word.contains(hint.letter)
@@ -115,6 +115,23 @@ mod tests {
             let actual = SimpleSolver::new(5, &vec!["hello".to_string(), "dog".to_string(), "in".to_string(), "early".to_string(), "difference".to_string()]);
             assert_eq!(actual.dict_words, vec!["hello", "early"]);
         }
+    }
+
+    #[test]
+    fn shrink_words() {
+        let actual = SimpleSolver::shrink_hints(&vec![
+            Hint { letter: 'r', spot: Spot::None() },
+            Hint { letter: 'o', spot: Spot::At(1) },
+            Hint { letter: 'b', spot: Spot::None() },
+            Hint { letter: 'o', spot: Spot::None() },
+            Hint { letter: 't', spot: Spot::At(4) },
+        ]);
+        assert_eq!(actual, vec![
+            Hint { letter: 'r', spot: Spot::None() },
+            Hint { letter: 'o', spot: Spot::At(1) },
+            Hint { letter: 'b', spot: Spot::None() },
+            Hint { letter: 't', spot: Spot::At(4) },
+        ])
     }
 
     #[cfg(test)]
