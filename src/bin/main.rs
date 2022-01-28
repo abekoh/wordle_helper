@@ -4,7 +4,7 @@ use std::io::BufRead;
 use std::iter::zip;
 
 use ansi_term::Color::{RGB, White};
-use ansi_term::Style;
+use ansi_term::{Colour, Style};
 use clap::Parser;
 use dialoguer::{Confirm, Input};
 use dialoguer::theme::ColorfulTheme;
@@ -27,11 +27,12 @@ fn main() {
     let config = Config::parse();
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &get_words(&config.dict_path)));
+    let mut states: InputStates = InputStates::new();
 
     println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
 
     loop {
-        println!("There are {} words are remained.\n", solver.remining_words_length().to_formatted_string(&Locale::en));
+        println!("There are {} words are remained.\n", solver.remained_words_length().to_formatted_string(&Locale::en));
 
         loop {
             let mut state = InputState::new(config.word_length);
@@ -50,6 +51,17 @@ fn main() {
                 .interact_text()
                 .unwrap();
             state.add_word(&guessed_word).unwrap();
+
+            if Confirm::with_theme(&ColorfulTheme::default())
+                .with_prompt("Correct?")
+                .interact()
+                .unwrap()
+            {
+                state.correct();
+                println!("{}\n", Style::new().bold().paint("Congratulation!!"));
+                println!("{}", states.preview(&state).unwrap());
+                std::process::exit(0);
+            }
 
             let hint_input = Input::with_theme(&ColorfulTheme::default())
                 .with_prompt("Hint")
@@ -72,15 +84,18 @@ fn main() {
                 .unwrap();
             state.add_hint(&hint_input).unwrap();
 
-            println!("{}", state.colorized_input().unwrap());
+
+            println!("{}", states.preview(&state).unwrap());
 
             if Confirm::with_theme(&ColorfulTheme::default())
                 .with_prompt("Is OK?")
                 .default(true)
                 .interact()
-                .unwrap() {
+                .unwrap()
+            {
                 let (word, hints) = state.get().unwrap();
                 solver.add_hint(word, hints);
+                states.add(state);
                 break;
             }
         }
@@ -115,7 +130,12 @@ struct InputState {
     width: usize,
     word: Option<String>,
     hint: Vec<Hint>,
+    is_correct: bool,
 }
+
+const BACK_GREEN: Colour = RGB(83, 141, 78);
+const BACK_YELLOW: Colour = RGB(180, 159, 58);
+const BACK_GRAY: Colour = RGB(58, 58, 60);
 
 impl InputState {
     pub fn new(width: usize) -> Self {
@@ -123,6 +143,7 @@ impl InputState {
             width,
             word: None,
             hint: vec![],
+            is_correct: false,
         }
     }
 
@@ -162,9 +183,16 @@ impl InputState {
         Result::Ok(())
     }
 
-    pub fn colorized_input(&self) -> Result<String, &'static str> {
+    pub fn correct(&mut self) {
+        self.is_correct = true;
+    }
+
+    pub fn colorized(&self) -> Result<String, &'static str> {
         if self.word.is_none() {
             return Result::Err("word are empty");
+        }
+        if self.is_correct {
+            return Result::Ok(format!("{}", Style::new().on(BACK_GREEN).fg(White).bold().paint(self.word.as_ref().unwrap())));
         }
         if self.hint.is_empty() {
             return Result::Err("hints are empty");
@@ -172,9 +200,9 @@ impl InputState {
         let mut chars: Vec<String> = Vec::new();
         for (c, hint) in zip(self.word.as_ref().unwrap().chars(), &self.hint) {
             let res = match hint.spot {
-                Spot::None() => format!("{}", Style::new().on(RGB(58, 58, 60)).fg(White).bold().paint(c.to_string())),
-                Spot::InWithout(_) => format!("{}", Style::new().on(RGB(180, 159, 58)).fg(White).bold().paint(c.to_string())),
-                Spot::At(_) => format!("{}", Style::new().on(RGB(83, 141, 78)).fg(White).bold().paint(c.to_string())),
+                Spot::None() => format!("{}", Style::new().on(BACK_GRAY).fg(White).bold().paint(c.to_string())),
+                Spot::InWithout(_) => format!("{}", Style::new().on(BACK_YELLOW).fg(White).bold().paint(c.to_string())),
+                Spot::At(_) => format!("{}", Style::new().on(BACK_GREEN).fg(White).bold().paint(c.to_string())),
             };
             chars.push(res);
         }
@@ -195,72 +223,109 @@ impl InputState {
     }
 }
 
+struct InputStates {
+    states: Vec<InputState>,
+}
+
+impl InputStates {
+    pub fn new() -> Self {
+        InputStates { states: Vec::new() }
+    }
+
+    pub fn add(&mut self, state: InputState) {
+        self.states.push(state)
+    }
+
+    pub fn preview(&self, staged_state: &InputState) -> Result<String, &'static str> {
+        let mut results: Vec<String> = Vec::new();
+        for state in &self.states {
+            match state.colorized() {
+                Ok(s) => results.push(s),
+                Err(e) => {
+                    return Err(e);
+                }
+            }
+        }
+        match staged_state.colorized() {
+            Ok(s) => results.push(s),
+            Err(e) => {
+                return Err(e);
+            }
+        }
+        Ok(results.join("\n"))
+    }
+}
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[test]
-    fn new() {
-        let actual = InputState::new(5);
-        assert_eq!(actual.width, 5);
-    }
-
 
     #[cfg(test)]
-    mod add_word {
+    mod input_state {
         use super::*;
 
         #[test]
-        fn valid() {
-            let mut state = InputState::new(5);
-            let actual = state.add_word("apple");
-            assert!(actual.is_ok());
+        fn new() {
+            let actual = InputState::new(5);
+            assert_eq!(actual.width, 5);
         }
 
-        #[test]
-        fn invalid() {
-            let mut state = InputState::new(5);
-            let actual = state.add_word("banana");
-            assert!(!actual.is_ok());
-        }
-    }
+        #[cfg(test)]
+        mod add_word {
+            use super::*;
 
-    #[cfg(test)]
-    mod add_hint {
-        use super::*;
-
-        #[test]
-        fn valid() {
-            let mut state = InputState::new(5);
-            state.add_word("bound").unwrap();
-            let actual = state.add_hint("00120");
-            assert!(actual.is_ok());
-            assert_eq!(state.hint, vec![
-                Hint::new('b', Spot::None()),
-                Hint::new('o', Spot::None()),
-                Hint::new('u', Spot::InWithout(2)),
-                Hint::new('n', Spot::At(3)),
-                Hint::new('d', Spot::None()),
-            ]);
-        }
-
-        #[test]
-        fn invalid_nums() {
-            let inputs = vec!["30120", "a0120", "001201"];
-            for input in inputs {
+            #[test]
+            fn valid() {
                 let mut state = InputState::new(5);
-                state.add_word("apple").unwrap();
-                let actual = state.add_hint(input);
+                let actual = state.add_word("apple");
+                assert!(actual.is_ok());
+            }
+
+            #[test]
+            fn invalid() {
+                let mut state = InputState::new(5);
+                let actual = state.add_word("banana");
                 assert!(!actual.is_ok());
             }
         }
 
-        #[test]
-        fn invalid_no_word() {
-            let mut state = InputState::new(5);
-            let actual = state.add_hint("00120");
-            assert!(!actual.is_ok());
+        #[cfg(test)]
+        mod add_hint {
+            use super::*;
+
+            #[test]
+            fn valid() {
+                let mut state = InputState::new(5);
+                state.add_word("bound").unwrap();
+                let actual = state.add_hint("00120");
+                assert!(actual.is_ok());
+                assert_eq!(state.hint, vec![
+                    Hint::new('b', Spot::None()),
+                    Hint::new('o', Spot::None()),
+                    Hint::new('u', Spot::InWithout(2)),
+                    Hint::new('n', Spot::At(3)),
+                    Hint::new('d', Spot::None()),
+                ]);
+            }
+
+            #[test]
+            fn invalid_nums() {
+                let inputs = vec!["30120", "a0120", "001201"];
+                for input in inputs {
+                    let mut state = InputState::new(5);
+                    state.add_word("apple").unwrap();
+                    let actual = state.add_hint(input);
+                    assert!(!actual.is_ok());
+                }
+            }
+
+            #[test]
+            fn invalid_no_word() {
+                let mut state = InputState::new(5);
+                let actual = state.add_hint("00120");
+                assert!(!actual.is_ok());
+            }
         }
     }
 }
