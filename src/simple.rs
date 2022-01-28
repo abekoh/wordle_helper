@@ -20,7 +20,7 @@ impl SimpleSolver {
         }
     }
 
-    fn shrink_hints(&self, hints: &[Hint]) -> Vec<Hint> {
+    fn shrink_hints(hints: &[Hint]) -> Vec<Hint> {
         let mut results: Vec<Hint> = Vec::new();
         for hint in hints {
             if hint.spot == Spot::None()
