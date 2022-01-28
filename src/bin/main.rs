@@ -93,10 +93,6 @@ fn main() {
                 break;
             }
         }
-
-        for guessed in solver.suggest() {
-            println!("{}", guessed);
-        }
     }
 }
 
