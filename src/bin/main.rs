@@ -54,7 +54,6 @@ fn main() {
 
             if Confirm::with_theme(&ColorfulTheme::default())
                 .with_prompt("Correct?")
-                .wait_for_newline(true)
                 .interact()
                 .unwrap()
             {
