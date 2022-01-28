@@ -6,7 +6,7 @@ use std::iter::zip;
 use ansi_term::Color::{RGB, White};
 use ansi_term::{Colour, Style};
 use clap::Parser;
-use dialoguer::{Confirm, Input};
+use dialoguer::{Confirm, FuzzySelect, Input};
 use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
 
@@ -37,20 +37,14 @@ fn main() {
         loop {
             let mut state = InputState::new(config.word_length);
 
-            let guessed_word = Input::with_theme(&ColorfulTheme::default())
-                .with_prompt("Guess word")
-                .validate_with({
-                    move |input: &String| -> Result<(), &str> {
-                        if input.len() == config.word_length {
-                            Ok(())
-                        } else {
-                            Err("invalid word length")
-                        }
-                    }
-                })
-                .interact_text()
+            let suggested = solver.suggest();
+            let selected = FuzzySelect::with_theme(&ColorfulTheme::default())
+                .with_prompt("Guess")
+                .default(0)
+                .items(suggested)
+                .interact()
                 .unwrap();
-            state.add_word(&guessed_word).unwrap();
+            state.add_word(&suggested[selected]).unwrap();
 
             if Confirm::with_theme(&ColorfulTheme::default())
                 .with_prompt("Correct?")
@@ -98,10 +92,6 @@ fn main() {
                 states.add(state);
                 break;
             }
-        }
-
-        for guessed in solver.guess() {
-            println!("{}", guessed);
         }
     }
 }
