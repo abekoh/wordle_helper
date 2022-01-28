@@ -80,7 +80,7 @@ impl SimpleSolver {
 }
 
 impl Solver for SimpleSolver {
-    fn guess(&self) -> &Vec<String> {
+    fn suggest(&self) -> &Vec<String> {
         &self.dict_words
     }
 
@@ -135,7 +135,7 @@ mod tests {
     }
 
     #[cfg(test)]
-    mod guess {
+    mod suggest {
         use super::*;
 
         fn preset_words() -> Vec<String> {
@@ -147,7 +147,7 @@ mod tests {
         fn remove_word() {
             let mut target = SimpleSolver::new(5, &preset_words());
             target.add_hint("hello", &vec![]);
-            assert_eq!(target.guess(), &vec![String::from("asset"), String::from("early")]);
+            assert_eq!(target.suggest(), &vec![String::from("asset"), String::from("early")]);
         }
 
         #[cfg(test)]
@@ -158,14 +158,14 @@ mod tests {
             fn a() {
                 let mut target = SimpleSolver::new(5, &preset_words());
                 target.add_hint("dummy", &vec![Hint { letter: 'a', spot: Spot::None() }]);
-                assert_eq!(target.guess(), &vec![String::from("hello")]);
+                assert_eq!(target.suggest(), &vec![String::from("hello")]);
             }
 
             #[test]
             fn l() {
                 let mut target = SimpleSolver::new(5, &preset_words());
                 target.add_hint("dummy", &vec![Hint { letter: 'l', spot: Spot::None() }]);
-                assert_eq!(target.guess(), &vec![String::from("asset")]);
+                assert_eq!(target.suggest(), &vec![String::from("asset")]);
             }
 
             #[test]
@@ -193,14 +193,14 @@ mod tests {
             fn l_2() {
                 let mut target = SimpleSolver::new(5, &preset_words());
                 target.add_hint("dummy", &vec![Hint { letter: 'l', spot: Spot::InWithout(2) }]);
-                assert_eq!(target.guess(), &vec![String::from("early")]);
+                assert_eq!(target.suggest(), &vec![String::from("early")]);
             }
 
             #[test]
             fn e_0() {
                 let mut target = SimpleSolver::new(5, &preset_words());
                 target.add_hint("dummy", &vec![Hint { letter: 'e', spot: Spot::InWithout(0) }]);
-                assert_eq!(target.guess(), &vec![String::from("hello"), String::from("asset")]);
+                assert_eq!(target.suggest(), &vec![String::from("hello"), String::from("asset")]);
             }
         }
 
@@ -213,7 +213,7 @@ mod tests {
             fn t_4() {
                 let mut target = SimpleSolver::new(5, &preset_words());
                 target.add_hint("dummy", &vec![Hint { letter: 't', spot: Spot::At(4) }]);
-                assert_eq!(target.guess(), &vec![String::from("asset")]);
+                assert_eq!(target.suggest(), &vec![String::from("asset")]);
             }
         }
 
@@ -238,7 +238,7 @@ mod tests {
                     Hint::new('n', Spot::None()),
                     Hint::new('d', Spot::None()),
                 ]);
-                assert_eq!(target.guess(), &vec![String::from("early"), String::from("asset"), String::from("spice")]);
+                assert_eq!(target.suggest(), &vec![String::from("early"), String::from("asset"), String::from("spice")]);
                 target.add_hint("spice", &vec![
                     Hint::new('s', Spot::InWithout(0)),
                     Hint::new('p', Spot::None()),
@@ -246,7 +246,7 @@ mod tests {
                     Hint::new('c', Spot::None()),
                     Hint::new('e', Spot::InWithout(4)),
                 ]);
-                assert_eq!(target.guess(), &vec![String::from("asset")]);
+                assert_eq!(target.suggest(), &vec![String::from("asset")]);
             }
         }
     }
