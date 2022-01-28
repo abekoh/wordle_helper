@@ -52,6 +52,15 @@ fn main() {
                 .unwrap();
             state.add_word(&guessed_word).unwrap();
 
+            if Confirm::with_theme(&ColorfulTheme::default())
+                .with_prompt("Correct?")
+                .interact()
+                .unwrap()
+            {
+                println!("{}\n", Style::new().bold().paint("Congratulation!!"));
+                std::process::exit(0);
+            }
+
             let hint_input = Input::with_theme(&ColorfulTheme::default())
                 .with_prompt("Hint")
                 .validate_with({
