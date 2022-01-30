@@ -65,7 +65,7 @@ fn main() {
                     state.add_word(&suggested[selected]).unwrap();
                 }
                 1 => {
-                    let input = FuzzySelect::with_theme(&ColorfulTheme::default())
+                    let input: String = Input::with_theme(&ColorfulTheme::default())
                         .with_prompt("Guess")
                         .interact_text()
                         .unwrap();
