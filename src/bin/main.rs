@@ -6,6 +6,7 @@ use clap::Parser;
 use dialoguer::{Confirm, FuzzySelect, Input, Select};
 use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
+use num_format::Locale::hi;
 
 use wordle_solver::{Dictionary, Hint, Solver, Spot};
 use wordle_solver::txt::TxtDictionary;
@@ -127,6 +128,12 @@ fn main() {
                 .unwrap()
             {
                 let (word, hints) = state.get().unwrap();
+                if Hint::all_at(hints) {
+                    state.correct();
+                    println!("{}\n", Style::new().bold().paint("Wow, It's correct! Congrats!"));
+                    println!("{}", states.preview(&state).unwrap());
+                    std::process::exit(0);
+                }
                 solver.add_hint(word, hints);
                 states.add(state);
                 break;
