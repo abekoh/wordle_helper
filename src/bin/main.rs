@@ -203,6 +203,17 @@ impl InputState {
         self.is_correct = true;
     }
 
+    pub fn is_only_word(&self) -> booll {
+        self.word.is_some() && self.hint.is_empty()
+    }
+
+    pub fn plain(&self) -> Result<String, &'static str> {
+        if self.word.is_none() {
+            return Result::Err("word are empty");
+        }
+        Result::Ok(format!("{}", Style::new().fg(White).bold().paint(self.word.as_ref().unwrap().to_uppercase())))
+    }
+
     pub fn colorized(&self) -> Result<String, &'static str> {
         if self.word.is_none() {
             return Result::Err("word are empty");
@@ -262,7 +273,12 @@ impl InputStates {
                 }
             }
         }
-        match staged_state.colorized() {
+
+        let staged_text = match staged_state.is_only_word() {
+            true => staged_state.plain(),
+            false => staged_state.colorized(),
+        };
+        match staged_text {
             Ok(s) => results.push(s),
             Err(e) => {
                 return Err(e);
