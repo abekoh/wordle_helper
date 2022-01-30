@@ -36,7 +36,7 @@ impl SimpleSolver {
             }
             results.push(hint.clone());
         }
-        return results;
+        results
     }
 
     fn update_with_hints(&mut self, hints: &[Hint]) {
@@ -119,13 +119,11 @@ mod tests {
 
     #[test]
     fn shrink_words() {
-        let actual = SimpleSolver::shrink_hints(&vec![
-            Hint { letter: 'r', spot: Spot::None() },
+        let actual = SimpleSolver::shrink_hints(&[Hint { letter: 'r', spot: Spot::None() },
             Hint { letter: 'o', spot: Spot::At(1) },
             Hint { letter: 'b', spot: Spot::None() },
             Hint { letter: 'o', spot: Spot::None() },
-            Hint { letter: 't', spot: Spot::At(4) },
-        ]);
+            Hint { letter: 't', spot: Spot::At(4) }]);
         assert_eq!(actual, vec![
             Hint { letter: 'r', spot: Spot::None() },
             Hint { letter: 'o', spot: Spot::At(1) },
@@ -146,7 +144,7 @@ mod tests {
         #[test]
         fn remove_word() {
             let mut target = SimpleSolver::new(5, &preset_words());
-            target.add_hint("hello", &vec![]);
+            target.add_hint("hello", &[]);
             assert_eq!(target.suggest(), &vec![String::from("asset"), String::from("early")]);
         }
 
@@ -157,14 +155,14 @@ mod tests {
             #[test]
             fn a() {
                 let mut target = SimpleSolver::new(5, &preset_words());
-                target.add_hint("dummy", &vec![Hint { letter: 'a', spot: Spot::None() }]);
+                target.add_hint("dummy", &[Hint { letter: 'a', spot: Spot::None() }]);
                 assert_eq!(target.suggest(), &vec![String::from("hello")]);
             }
 
             #[test]
             fn l() {
                 let mut target = SimpleSolver::new(5, &preset_words());
-                target.add_hint("dummy", &vec![Hint { letter: 'l', spot: Spot::None() }]);
+                target.add_hint("dummy", &[Hint { letter: 'l', spot: Spot::None() }]);
                 assert_eq!(target.suggest(), &vec![String::from("asset")]);
             }
 
@@ -174,13 +172,11 @@ mod tests {
                     5,
                     &vec!["early".to_string()],
                 );
-                actual.add_hint("robot", &vec![
-                    Hint { letter: 's', spot: Spot::None() },
+                actual.add_hint("robot", &[Hint { letter: 's', spot: Spot::None() },
                     Hint { letter: 'k', spot: Spot::None() },
                     Hint { letter: 'i', spot: Spot::None() },
                     Hint { letter: 'l', spot: Spot::At(3) },
-                    Hint { letter: 'l', spot: Spot::None() },
-                ]);
+                    Hint { letter: 'l', spot: Spot::None() }]);
                 assert_eq!(actual.suggest(), &vec![String::from("early")]);
             }
         }
@@ -192,14 +188,14 @@ mod tests {
             #[test]
             fn l_2() {
                 let mut target = SimpleSolver::new(5, &preset_words());
-                target.add_hint("dummy", &vec![Hint { letter: 'l', spot: Spot::InWithout(2) }]);
+                target.add_hint("dummy", &[Hint { letter: 'l', spot: Spot::InWithout(2) }]);
                 assert_eq!(target.suggest(), &vec![String::from("early")]);
             }
 
             #[test]
             fn e_0() {
                 let mut target = SimpleSolver::new(5, &preset_words());
-                target.add_hint("dummy", &vec![Hint { letter: 'e', spot: Spot::InWithout(0) }]);
+                target.add_hint("dummy", &[Hint { letter: 'e', spot: Spot::InWithout(0) }]);
                 assert_eq!(target.suggest(), &vec![String::from("hello"), String::from("asset")]);
             }
         }
@@ -212,7 +208,7 @@ mod tests {
             #[test]
             fn t_4() {
                 let mut target = SimpleSolver::new(5, &preset_words());
-                target.add_hint("dummy", &vec![Hint { letter: 't', spot: Spot::At(4) }]);
+                target.add_hint("dummy", &[Hint { letter: 't', spot: Spot::At(4) }]);
                 assert_eq!(target.suggest(), &vec![String::from("asset")]);
             }
         }
@@ -231,21 +227,17 @@ mod tests {
                     "heard".to_string(),
                     "spice".to_string(),
                 ]);
-                target.add_hint("bound", &vec![
-                    Hint::new('b', Spot::None()),
+                target.add_hint("bound", &[Hint::new('b', Spot::None()),
                     Hint::new('o', Spot::None()),
                     Hint::new('u', Spot::None()),
                     Hint::new('n', Spot::None()),
-                    Hint::new('d', Spot::None()),
-                ]);
+                    Hint::new('d', Spot::None())]);
                 assert_eq!(target.suggest(), &vec![String::from("early"), String::from("asset"), String::from("spice")]);
-                target.add_hint("spice", &vec![
-                    Hint::new('s', Spot::InWithout(0)),
+                target.add_hint("spice", &[Hint::new('s', Spot::InWithout(0)),
                     Hint::new('p', Spot::None()),
                     Hint::new('i', Spot::None()),
                     Hint::new('c', Spot::None()),
-                    Hint::new('e', Spot::InWithout(4)),
-                ]);
+                    Hint::new('e', Spot::InWithout(4))]);
                 assert_eq!(target.suggest(), &vec![String::from("asset")]);
             }
         }
