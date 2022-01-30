@@ -54,6 +54,7 @@ fn main() {
 
         loop {
             println!();
+            println!("{}", Style::new().bold().paint(format!("ROUND {}/{}", states.round_count + 1, config.answer_length)));
             println!("There are {} words are remained.", remained_words_length.to_formatted_string(&Locale::en));
 
             let mut state = InputState::new(config.word_length);
@@ -113,6 +114,13 @@ fn main() {
                 println!("{}", states.preview(&state).unwrap());
                 std::process::exit(0);
             }
+
+            if states.is_final_round() {
+                println!("{}\n", Style::new().bold().paint(format!("X/{} GAME OVER!!", config.answer_length)));
+                println!("{}", states.preview(&state).unwrap());
+                std::process::exit(1);
+            }
+            states.increment_round();
 
             println!(r#"Input {} numbers in order as hint;
 · nowhere   -> {}
@@ -313,11 +321,12 @@ struct InputStates {
     word_width: usize,
     answer_width: usize,
     states: Vec<InputState>,
+    pub round_count: i32,
 }
 
 impl InputStates {
     pub fn new(word_width: usize, answer_width: usize) -> Self {
-        InputStates { states: Vec::new(), word_width, answer_width }
+        InputStates { states: Vec::new(), word_width, answer_width, round_count: 0 }
     }
 
     pub fn add(&mut self, state: InputState) {
@@ -362,6 +371,14 @@ impl InputStates {
         }
         results.push(header_footer);
         results.join("\n")
+    }
+
+    fn increment_round(&mut self) {
+        self.round_count += 1;
+    }
+
+    fn is_final_round(&self) -> bool {
+        (self.round_count + 1) == self.answer_width as i32
     }
 }
 
