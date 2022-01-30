@@ -6,11 +6,10 @@ use clap::Parser;
 use dialoguer::{Confirm, FuzzySelect, Input, Select};
 use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
-use num_format::Locale::he;
 
 use wordle_solver::{Dictionary, Hint, Solver, Spot};
-use wordle_solver::txt::TxtDictionary;
 use wordle_solver::simple::SimpleSolver;
+use wordle_solver::txt::TxtDictionary;
 
 #[derive(Parser)]
 #[clap(version, about, long_about = None)]
@@ -293,7 +292,7 @@ impl InputStates {
     fn pretty_preview(&self, word_strs: &[String]) -> String {
         let header_footer: String = format!("+{}+", (0..self.word_width).collect::<Vec<usize>>()
             .iter()
-            .map(|n| { "-".to_string() })
+            .map(|_| { "-".to_string() })
             .collect::<Vec<String>>()
             .join(""));
         let mut results: Vec<String> = Vec::new();
