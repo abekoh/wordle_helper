@@ -119,9 +119,9 @@ fn main() {
 · somewhere -> {}
 · just      -> {}"#,
                      config.word_length,
-                     colorize(HintInputType::Nowhere, "0"),
-                     colorize(HintInputType::Somewhere, "1"),
-                     colorize(HintInputType::Just, "2"),
+                     colorize(&HintInputType::Nowhere, "0"),
+                     colorize(&HintInputType::Somewhere, "1"),
+                     colorize(&HintInputType::Just, "2"),
             );
 
             let hint_input = Input::with_theme(&ColorfulTheme::default())
@@ -179,7 +179,7 @@ enum HintInputType {
     Just,
 }
 
-fn colorize(hint_type: HintInputType, text: &str) -> ANSIGenericString<str> {
+fn colorize<'a>(hint_type: &'a HintInputType, text: &'a str) -> ANSIGenericString<'a, str> {
     return match hint_type {
         HintInputType::Nowhere => Style::new().on(BACK_GRAY).fg(White).bold().paint(text.to_string()),
         HintInputType::Somewhere => Style::new().on(BACK_YELLOW).fg(White).bold().paint(text.to_string()),
@@ -270,7 +270,7 @@ impl InputState {
             return Result::Err("word are empty");
         }
         if self.is_correct {
-            return Result::Ok(format!("{}", colorize(HintInputType::Just, &self.word.as_ref().unwrap().to_uppercase())));
+            return Result::Ok(format!("{}", colorize(&HintInputType::Just, &self.word.as_ref().unwrap().to_uppercase())));
         }
         if self.hint.is_empty() {
             return Result::Err("hints are empty");
@@ -278,9 +278,9 @@ impl InputState {
         let mut chars: Vec<String> = Vec::new();
         for (c, hint) in zip(self.word.as_ref().unwrap().chars(), &self.hint) {
             let res = match hint.spot {
-                Spot::None() => format!("{}", colorize(HintInputType::Nowhere, &c.to_string().to_uppercase())),
-                Spot::InWithout(_) => format!("{}", colorize(HintInputType::Somewhere, &c.to_string().to_uppercase())),
-                Spot::At(_) => format!("{}", colorize(HintInputType::Just, &c.to_string().to_uppercase())),
+                Spot::None() => format!("{}", colorize(&HintInputType::Nowhere, &c.to_string().to_uppercase())),
+                Spot::InWithout(_) => format!("{}", colorize(&HintInputType::Somewhere, &c.to_string().to_uppercase())),
+                Spot::At(_) => format!("{}", colorize(&HintInputType::Just, &c.to_string().to_uppercase())),
             };
             chars.push(res);
         }
