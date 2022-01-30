@@ -123,6 +123,14 @@ fn main() {
                      colorize(&HintInputType::Somewhere, "1"),
                      colorize(&HintInputType::Just, "2"),
             );
+            println!("{}{}{}{}{}{}",
+                     Style::new().fg(RGB(128, 128, 128)).paint("e.g.) SOLVE + 10221 => "),
+                     colorize(&HintInputType::Somewhere, "S"),
+                     colorize(&HintInputType::Nowhere, "O"),
+                     colorize(&HintInputType::Just, "L"),
+                     colorize(&HintInputType::Just, "V"),
+                     colorize(&HintInputType::Somewhere, "E"),
+            );
 
             let hint_input = Input::with_theme(&ColorfulTheme::default())
                 .with_prompt("Hint")
