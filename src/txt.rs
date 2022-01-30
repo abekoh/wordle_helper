@@ -57,7 +57,7 @@ pub struct TxtDictionary {
 
 impl TxtDictionary {
     pub fn new(path: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        if path == "" {
+        if path.is_empty() {
             let default_path = default_dict_path();
             if !default_path.exists() {
                 println!("{}",
