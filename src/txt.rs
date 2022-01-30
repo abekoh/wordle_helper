@@ -23,6 +23,10 @@ fn default_dict_path() -> Box<Path> {
     buf.into_boxed_path()
 }
 
+fn fetch_from_english_words(path: &Path) -> io::Result<()> {
+    todo!()
+}
+
 pub struct TxtDictionary {
     file: File,
 }
@@ -30,7 +34,11 @@ pub struct TxtDictionary {
 impl TxtDictionary {
     pub fn new(path: &str) -> io::Result<Self> {
         if path == "" {
-            let file = File::open(default_dict_path())?;
+            let default_path = default_dict_path();
+            if !default_path.exists() {
+                fetch_from_english_words(&default_path)?
+            }
+            let file = File::open(default_path)?;
             Ok(TxtDictionary { file })
         } else {
             let file = File::open(path)?;
