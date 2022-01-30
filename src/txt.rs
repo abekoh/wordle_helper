@@ -54,8 +54,13 @@ impl TxtDictionary {
                              format!("Default dictionary is not found at {}", default_path.to_str().unwrap())
                          )
                 );
+                println!("{}",
+                         Style::new().fg(Yellow).paint(
+                             format!("So I should download dictionary from https://github.com/dwyl/english-words (about 4.04MB)")
+                         )
+                );
                 if Confirm::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Do you download this?")
+                    .with_prompt("Do you want to continue?")
                     .interact()
                     .unwrap()
                 {
