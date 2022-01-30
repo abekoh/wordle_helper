@@ -7,8 +7,8 @@ use dialoguer::{Confirm, FuzzySelect, Input};
 use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
 
-use wordle_solver::{Hint, Solver, Spot};
-use wordle_solver::dictionary::get_words;
+use wordle_solver::{Dictionary, Hint, Solver, Spot};
+use wordle_solver::txt::TxtDictionary;
 use wordle_solver::simple::SimpleSolver;
 
 #[derive(Parser)]
@@ -24,7 +24,15 @@ struct Config {
 fn main() {
     let config = Config::parse();
 
-    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &get_words(&config.dict_path)));
+    let dictionary: Box<dyn Dictionary> = Box::new(TxtDictionary::new(&config.dict_path));
+    let words = match dictionary.extract_words(config.word_length) {
+        Ok(r) => r,
+        Err(e) => {
+            eprintln!("failed to load: {}", e);
+            std::process::exit(1);
+        }
+    };
+    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &words));
     let mut states: InputStates = InputStates::new();
 
     println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));

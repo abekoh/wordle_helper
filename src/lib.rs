@@ -1,5 +1,5 @@
 pub mod simple;
-pub mod dictionary;
+pub mod txt;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Spot {
@@ -24,4 +24,8 @@ pub trait Solver {
     fn suggest(&self) -> &Vec<String>;
     fn add_hint(&mut self, word: &str, hints: &[Hint]);
     fn remained_words_length(&self) -> usize;
+}
+
+pub trait Dictionary {
+    fn extract_words(&self, word_length: usize) -> Result<Vec<String>, &str>;
 }
