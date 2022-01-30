@@ -110,13 +110,13 @@ fn main() {
                 .unwrap()
             {
                 state.correct();
-                println!("{}\n", Style::new().bold().paint("Congratulation!!"));
+                println!("{}", Style::new().bold().paint("Congratulation!!"));
                 println!("{}", states.preview(&state).unwrap());
                 std::process::exit(0);
             }
 
             if states.is_final_round() {
-                println!("{}\n", Style::new().bold().paint(format!("X/{} GAME OVER!!", config.max_guess_count)));
+                println!("{}", Style::new().bold().paint(format!("X/{} GAME OVER!!", config.max_guess_count)));
                 println!("{}", states.preview(&state).unwrap());
                 std::process::exit(1);
             }
@@ -176,7 +176,7 @@ fn main() {
                     let (word, hints) = state.get().unwrap();
                     if Hint::all_at(hints) {
                         state.correct();
-                        println!("{}\n", Style::new().bold().paint("Wow, It's correct! Congrats!"));
+                        println!("{}", Style::new().bold().paint("Wow, It's correct! Congrats!"));
                         println!("{}", states.preview(&state).unwrap());
                         std::process::exit(0);
                     }
