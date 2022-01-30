@@ -82,6 +82,14 @@ fn main() {
                 1 => {
                     let input: String = Input::with_theme(&ColorfulTheme::default())
                         .with_prompt("Guess")
+                        .validate_with({
+                            move |input: &String| -> Result<(), &str> {
+                                if input.len() != config.word_length {
+                                    return Err("invalid length");
+                                }
+                                Ok(())
+                            }
+                        })
                         .interact_text()
                         .unwrap();
                     state.add_word(&input).unwrap();
