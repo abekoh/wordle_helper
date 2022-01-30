@@ -89,6 +89,8 @@ fn main() {
                 }
             }
 
+            println!("{}", states.preview(&state).unwrap());
+
             if Confirm::with_theme(&ColorfulTheme::default())
                 .with_prompt("Correct?")
                 .interact()
@@ -100,7 +102,6 @@ fn main() {
                 std::process::exit(0);
             }
 
-            println!("{}", states.preview(&state).unwrap());
             let hint_input = Input::with_theme(&ColorfulTheme::default())
                 .with_prompt("Hint")
                 .validate_with({
@@ -207,7 +208,10 @@ impl InputState {
         self.is_correct = true;
     }
 
-    pub fn is_only_word(&self) -> bool {
+    pub fn is_draft(&self) -> bool {
+        if self.is_correct {
+            return false;
+        }
         self.word.is_some() && self.hint.is_empty()
     }
 
@@ -280,7 +284,7 @@ impl InputStates {
             }
         }
 
-        let staged_text = match staged_state.is_only_word() {
+        let staged_text = match staged_state.is_draft() {
             true => staged_state.plain(),
             false => staged_state.colorized(),
         };
