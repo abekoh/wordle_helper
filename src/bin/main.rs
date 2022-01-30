@@ -182,7 +182,7 @@ impl InputState {
             };
             chars.push(res);
         }
-        return Result::Ok(chars.join(""));
+        Result::Ok(chars.join(""))
     }
 
     pub fn get(&self) -> Result<(&str, &Vec<Hint>), &'static str> {
@@ -261,7 +261,7 @@ mod tests {
             fn invalid() {
                 let mut state = InputState::new(5);
                 let actual = state.add_word("banana");
-                assert!(!actual.is_ok());
+                assert!(actual.is_err());
             }
         }
 
@@ -291,7 +291,7 @@ mod tests {
                     let mut state = InputState::new(5);
                     state.add_word("apple").unwrap();
                     let actual = state.add_hint(input);
-                    assert!(!actual.is_ok());
+                    assert!(actual.is_err());
                 }
             }
 
@@ -299,7 +299,7 @@ mod tests {
             fn invalid_no_word() {
                 let mut state = InputState::new(5);
                 let actual = state.add_hint("00120");
-                assert!(!actual.is_ok());
+                assert!(actual.is_err());
             }
         }
     }
