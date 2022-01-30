@@ -309,7 +309,7 @@ impl InputStates {
                 results.push(format!("|{}|", " ".repeat(self.word_width)));
             }
         }
-        results.push(header_footer.clone());
+        results.push(header_footer);
         results.join("\n")
     }
 }
@@ -393,11 +393,9 @@ mod tests {
         #[test]
         fn pretty_preview() {
             let target = InputStates::new(5, 6);
-            let actual = target.pretty_preview(&vec![
-                "ABCDE".to_string(),
+            let actual = target.pretty_preview(&["ABCDE".to_string(),
                 "FGHIJ".to_string(),
-                "KLMNO".to_string(),
-            ]);
+                "KLMNO".to_string()]);
             assert_eq!(actual, r#"+-----+
 |ABCDE|
 |FGHIJ|
