@@ -4,7 +4,8 @@ use std::io;
 use std::io::{BufRead, copy};
 use std::env;
 use std::path::Path;
-use num_format::Locale::pa;
+use dialoguer::Confirm;
+use dialoguer::theme::ColorfulTheme;
 use crate::Dictionary;
 
 const DEFAULT_CACHE_DIR: &str = "wordle-solver";
@@ -46,7 +47,14 @@ impl TxtDictionary {
         if path == "" {
             let default_path = default_dict_path();
             if !default_path.exists() {
-                fetch_from_english_words(&default_path)?
+                println!("Default dictionary is not found at {}", default_path.to_str().unwrap());
+                if Confirm::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Do you download this?")
+                    .interact()
+                    .unwrap()
+                {
+                    fetch_from_english_words(&default_path)?
+                }
             }
             let file = File::open(default_path)?;
             Ok(TxtDictionary { file })
