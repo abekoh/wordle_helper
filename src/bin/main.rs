@@ -100,10 +100,11 @@ fn main() {
                 }
             }
 
+            println!("Input answer like this:");
             println!("{}", states.preview(&state).unwrap());
 
             if Confirm::with_theme(&ColorfulTheme::default())
-                .with_prompt("Correct?")
+                .with_prompt("Is corrected?")
                 .interact()
                 .unwrap()
             {
