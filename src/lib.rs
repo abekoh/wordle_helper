@@ -1,3 +1,5 @@
+use num_format::Locale::tr;
+
 pub mod simple;
 pub mod txt;
 
@@ -18,6 +20,16 @@ impl Hint {
     pub fn new(letter: char, spot: Spot) -> Self {
         Hint { letter, spot }
     }
+    pub fn all_at(hints: &[Hint]) -> bool {
+        hints.iter()
+            .filter(|h| {
+                match h.spot {
+                    Spot::At(_) => true,
+                    _ => false
+                }
+            })
+            .count() == hints.len()
+    }
 }
 
 pub trait Solver {
@@ -28,4 +40,31 @@ pub trait Solver {
 
 pub trait Dictionary {
     fn extract_words(&self, word_length: usize) -> Vec<String>;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn all_at_true() {
+        assert!(Hint::all_at(&[
+            Hint::new('e', Spot::At(0)),
+            Hint::new('a', Spot::At(1)),
+            Hint::new('r', Spot::At(2)),
+            Hint::new('l', Spot::At(3)),
+            Hint::new('y', Spot::At(4)),
+        ]))
+    }
+
+    #[test]
+    fn all_at_false() {
+        assert!(!Hint::all_at(&[
+            Hint::new('e', Spot::At(0)),
+            Hint::new('a', Spot::At(1)),
+            Hint::new('r', Spot::At(2)),
+            Hint::new('l', Spot::At(3)),
+            Hint::new('y', Spot::None()),
+        ]))
+    }
 }
