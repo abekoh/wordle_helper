@@ -18,8 +18,8 @@ struct Config {
     #[clap(short, long, default_value_t = 5, help = "length of one word")]
     word_length: usize,
 
-    #[clap(short, long, default_value_t = 6, help = "how many you can answer")]
-    answer_length: usize,
+    #[clap(short, long, default_value_t = 6, help = "number of answer you can guess")]
+    max_guess_count: usize,
 
     #[clap(short, long, hide_default_value = true, default_value = "", help = "dictionary path")]
     dict_path: String,
@@ -39,10 +39,10 @@ fn main() {
         }
     });
     println!("{}", Cyan.paint(format!("word length: {}", config.word_length)));
-    println!("{}", Cyan.paint(format!("number of answer you can guess: {}", config.answer_length)));
+    println!("{}", Cyan.paint(format!("number of answer you can guess: {}", config.max_guess_count)));
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &dictionary.extract_words(config.word_length)));
-    let mut states: InputStates = InputStates::new(config.word_length, config.answer_length);
+    let mut states: InputStates = InputStates::new(config.word_length, config.max_guess_count);
 
     loop {
         let remained_words_length = solver.remained_words_length();
@@ -54,7 +54,7 @@ fn main() {
 
         loop {
             println!();
-            println!("{}", Style::new().bold().paint(format!("ROUND {}/{}", states.round_count + 1, config.answer_length)));
+            println!("{}", Style::new().bold().paint(format!("ROUND {}/{}", states.round_count + 1, config.max_guess_count)));
             println!("There are {} words are remained.", remained_words_length.to_formatted_string(&Locale::en));
 
             let mut state = InputState::new(config.word_length);
@@ -116,7 +116,7 @@ fn main() {
             }
 
             if states.is_final_round() {
-                println!("{}\n", Style::new().bold().paint(format!("X/{} GAME OVER!!", config.answer_length)));
+                println!("{}\n", Style::new().bold().paint(format!("X/{} GAME OVER!!", config.max_guess_count)));
                 println!("{}", states.preview(&state).unwrap());
                 std::process::exit(1);
             }
@@ -322,14 +322,14 @@ impl InputState {
 
 struct InputStates {
     word_length: usize,
-    answer_length: usize,
+    max_guess_count: usize,
     states: Vec<InputState>,
     pub round_count: i32,
 }
 
 impl InputStates {
-    pub fn new(word_length: usize, answer_length: usize) -> Self {
-        InputStates { states: Vec::new(), word_length, answer_length, round_count: 0 }
+    pub fn new(word_length: usize, max_guess_count: usize) -> Self {
+        InputStates { states: Vec::new(), word_length, max_guess_count, round_count: 0 }
     }
 
     pub fn add(&mut self, state: InputState) {
@@ -363,7 +363,7 @@ impl InputStates {
     fn pretty_preview(&self, word_strs: &[String]) -> String {
         let header_footer: String = format!("+{}+", "-".repeat(self.word_length));
         let mut results: Vec<String> = vec![header_footer.clone()];
-        for i in 0..self.answer_length {
+        for i in 0..self.max_guess_count {
             if i < word_strs.len() {
                 results.push(format!("|{}|", word_strs[i]));
             } else {
@@ -379,7 +379,7 @@ impl InputStates {
     }
 
     fn is_final_round(&self) -> bool {
-        (self.round_count + 1) == self.answer_length as i32
+        (self.round_count + 1) == self.max_guess_count as i32
     }
 }
 
