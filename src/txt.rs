@@ -4,7 +4,7 @@ use std::io;
 use std::io::{BufRead, copy};
 use std::env;
 use std::path::Path;
-use ansi_term::Color::Yellow;
+use ansi_term::Color::{Red, Yellow};
 use ansi_term::Style;
 use dialoguer::Confirm;
 use dialoguer::theme::ColorfulTheme;
