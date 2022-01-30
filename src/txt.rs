@@ -1,8 +1,10 @@
+use std::fs;
 use std::fs::{File};
 use std::io;
 use std::io::{BufRead, copy};
 use std::env;
 use std::path::Path;
+use num_format::Locale::pa;
 use crate::Dictionary;
 
 const DEFAULT_CACHE_DIR: &str = "wordle-solver";
@@ -27,6 +29,7 @@ const ENGLISH_WORDS_URL: &str = "https://raw.githubusercontent.com/dwyl/english-
 
 fn fetch_from_english_words(path: &Path) -> Result<(), Box<dyn std::error::Error>> {
     println!("download {} into {}", ENGLISH_WORDS_URL, path.to_str().unwrap());
+    fs::create_dir_all(path.parent().unwrap())?;
     let resp = reqwest::blocking::get(ENGLISH_WORDS_URL)?;
     let mut dest = File::create(path)?;
     let content = resp.text()?;
