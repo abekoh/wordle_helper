@@ -207,16 +207,16 @@ fn colorize<'a>(hint_type: &'a HintInputType, text: &'a str) -> ANSIGenericStrin
 }
 
 struct InputState {
-    width: usize,
+    word_length: usize,
     word: Option<String>,
     hint: Vec<Hint>,
     is_correct: bool,
 }
 
 impl InputState {
-    pub fn new(width: usize) -> Self {
+    pub fn new(word_length: usize) -> Self {
         InputState {
-            width,
+            word_length,
             word: None,
             hint: vec![],
             is_correct: false,
@@ -224,7 +224,7 @@ impl InputState {
     }
 
     pub fn add_word(&mut self, input: &str) -> Result<(), &'static str> {
-        if input.trim().len() != self.width {
+        if input.trim().len() != self.word_length {
             return Result::Err("invalid word length");
         }
         self.word = Option::from(input.trim().to_string());
@@ -236,7 +236,7 @@ impl InputState {
             return Result::Err("add word before");
         }
         let trimmed = input.trim();
-        if trimmed.len() != self.width {
+        if trimmed.len() != self.word_length {
             return Result::Err("invalid length");
         }
         for (i, hint_c) in trimmed.chars().enumerate() {
@@ -321,15 +321,15 @@ impl InputState {
 }
 
 struct InputStates {
-    word_width: usize,
-    answer_width: usize,
+    word_length: usize,
+    answer_length: usize,
     states: Vec<InputState>,
     pub round_count: i32,
 }
 
 impl InputStates {
-    pub fn new(word_width: usize, answer_width: usize) -> Self {
-        InputStates { states: Vec::new(), word_width, answer_width, round_count: 0 }
+    pub fn new(word_length: usize, answer_length: usize) -> Self {
+        InputStates { states: Vec::new(), word_length, answer_length, round_count: 0 }
     }
 
     pub fn add(&mut self, state: InputState) {
@@ -361,15 +361,15 @@ impl InputStates {
     }
 
     fn pretty_preview(&self, word_strs: &[String]) -> String {
-        let header_footer: String = format!("+{}+", "-".repeat(self.word_width));
+        let header_footer: String = format!("+{}+", "-".repeat(self.word_length));
 
         let mut results: Vec<String> = Vec::new();
         results.push(header_footer.clone());
-        for i in 0..self.answer_width {
+        for i in 0..self.answer_length {
             if i < word_strs.len() {
                 results.push(format!("|{}|", word_strs[i]));
             } else {
-                results.push(format!("|{}|", " ".repeat(self.word_width)));
+                results.push(format!("|{}|", " ".repeat(self.word_length)));
             }
         }
         results.push(header_footer);
@@ -381,7 +381,7 @@ impl InputStates {
     }
 
     fn is_final_round(&self) -> bool {
-        (self.round_count + 1) == self.answer_width as i32
+        (self.round_count + 1) == self.answer_length as i32
     }
 }
 
@@ -396,7 +396,7 @@ mod tests {
         #[test]
         fn new() {
             let actual = InputState::new(5);
-            assert_eq!(actual.width, 5);
+            assert_eq!(actual.word_length, 5);
         }
 
         #[cfg(test)]
