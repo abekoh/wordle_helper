@@ -104,7 +104,7 @@ fn main() {
             println!("{}", states.preview(&state).unwrap());
 
             if Confirm::with_theme(&ColorfulTheme::default())
-                .with_prompt("Is corrected?")
+                .with_prompt("Is corrected answer?")
                 .interact()
                 .unwrap()
             {
