@@ -252,12 +252,13 @@ impl InputState {
 }
 
 struct InputStates {
+    word_width: usize,
     states: Vec<InputState>,
 }
 
 impl InputStates {
-    pub fn new() -> Self {
-        InputStates { states: Vec::new() }
+    pub fn new(word_width: usize) -> Self {
+        InputStates { states: Vec::new(), word_width }
     }
 
     pub fn add(&mut self, state: InputState) {
