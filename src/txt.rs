@@ -26,6 +26,7 @@ fn default_dict_path() -> Box<Path> {
 const ENGLISH_WORDS_URL: &str = "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt";
 
 fn fetch_from_english_words(path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    println!("download {} into {}", ENGLISH_WORDS_URL, path.to_str().unwrap());
     let resp = reqwest::blocking::get(ENGLISH_WORDS_URL)?;
     let mut dest = File::create(path)?;
     let content = resp.text()?;
