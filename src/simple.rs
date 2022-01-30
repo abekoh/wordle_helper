@@ -7,7 +7,7 @@ pub struct SimpleSolver {
 }
 
 impl SimpleSolver {
-    pub fn new(width: usize, dict_words: &Vec<String>) -> SimpleSolver {
+    pub fn new(width: usize, dict_words: &[String]) -> SimpleSolver {
         SimpleSolver {
             width,
             dict_words: dict_words.iter()
@@ -27,10 +27,8 @@ impl SimpleSolver {
                 && hints
                 .iter()
                 .filter(|h| {
-                    match h.spot {
-                        Spot::At(_) => h.letter == hint.letter,
-                        _ => false,
-                    }
+                    h.letter == hint.letter
+                        && (matches!(h.spot, Spot::InWithout(_)) || matches!(h.spot, Spot::At(_)))
                 }).count() > 0 {
                 continue;
             }
@@ -70,11 +68,8 @@ impl SimpleSolver {
         if word.len() != self.width {
             return;
         }
-        match self.dict_words.iter().position(|r| { r == word }) {
-            Some(index) => {
-                self.dict_words.swap_remove(index);
-            }
-            _ => (),
+        if let Some(index) = self.dict_words.iter().position(|r| { r == word }) {
+            self.dict_words.swap_remove(index);
         }
     }
 }
@@ -98,38 +93,66 @@ impl Solver for SimpleSolver {
 mod tests {
     use super::*;
 
-
     #[cfg(test)]
     mod new {
         use super::*;
 
         #[test]
         fn asset_fields() {
-            let target = SimpleSolver::new(5, &vec!["hello".to_string(), "early".to_string()]);
+            let target = SimpleSolver::new(5, &["hello".to_string(), "early".to_string()]);
             assert_eq!(target.width, 5);
             assert_eq!(target.dict_words, vec!["hello", "early"]);
         }
 
         #[test]
         fn filter_word_only_length_is_5() {
-            let target = SimpleSolver::new(5, &vec!["hello".to_string(), "dog".to_string(), "in".to_string(), "early".to_string(), "difference".to_string()]);
+            let target = SimpleSolver::new(5, &[
+                "hello".to_string(),
+                "dog".to_string(),
+                "in".to_string(),
+                "early".to_string(),
+                "difference".to_string()]);
             assert_eq!(target.dict_words, vec!["hello", "early"]);
         }
     }
 
-    #[test]
-    fn shrink_words() {
-        let actual = SimpleSolver::shrink_hints(&[Hint { letter: 'r', spot: Spot::None() },
-            Hint { letter: 'o', spot: Spot::At(1) },
-            Hint { letter: 'b', spot: Spot::None() },
-            Hint { letter: 'o', spot: Spot::None() },
-            Hint { letter: 't', spot: Spot::At(4) }]);
-        assert_eq!(actual, vec![
-            Hint { letter: 'r', spot: Spot::None() },
-            Hint { letter: 'o', spot: Spot::At(1) },
-            Hint { letter: 'b', spot: Spot::None() },
-            Hint { letter: 't', spot: Spot::At(4) },
-        ])
+    #[cfg(test)]
+    mod shrink_words {
+        use super::*;
+
+        #[test]
+        fn remove_none_when_has_at() {
+            let actual = SimpleSolver::shrink_hints(&[
+                Hint { letter: 'r', spot: Spot::None() },
+                Hint { letter: 'o', spot: Spot::At(1) },
+                Hint { letter: 'b', spot: Spot::None() },
+                Hint { letter: 'o', spot: Spot::None() },
+                Hint { letter: 't', spot: Spot::At(4) }
+            ]);
+            assert_eq!(actual, vec![
+                Hint { letter: 'r', spot: Spot::None() },
+                Hint { letter: 'o', spot: Spot::At(1) },
+                Hint { letter: 'b', spot: Spot::None() },
+                Hint { letter: 't', spot: Spot::At(4) },
+            ])
+        }
+
+        #[test]
+        fn remove_none_when_has_in_without() {
+            let actual = SimpleSolver::shrink_hints(&[
+                Hint { letter: 't', spot: Spot::None() },
+                Hint { letter: 'a', spot: Spot::InWithout(1) },
+                Hint { letter: 'y', spot: Spot::InWithout(2) },
+                Hint { letter: 'r', spot: Spot::None() },
+                Hint { letter: 'a', spot: Spot::None() }
+            ]);
+            assert_eq!(actual, vec![
+                Hint { letter: 't', spot: Spot::None() },
+                Hint { letter: 'a', spot: Spot::InWithout(1) },
+                Hint { letter: 'y', spot: Spot::InWithout(2) },
+                Hint { letter: 'r', spot: Spot::None() },
+            ]);
+        }
     }
 
     #[cfg(test)]
@@ -170,7 +193,7 @@ mod tests {
             fn none_but_include() {
                 let mut actual = SimpleSolver::new(
                     5,
-                    &vec!["early".to_string()],
+                    &["early".to_string()],
                 );
                 actual.add_hint("robot", &[Hint { letter: 's', spot: Spot::None() },
                     Hint { letter: 'k', spot: Spot::None() },
@@ -219,14 +242,13 @@ mod tests {
 
             #[test]
             fn multiple_1() {
-                let mut target = SimpleSolver::new(5, &vec![
+                let mut target = SimpleSolver::new(5, &[
                     "hello".to_string(),
                     "early".to_string(),
                     "asset".to_string(),
                     "bound".to_string(),
                     "heard".to_string(),
-                    "spice".to_string(),
-                ]);
+                    "spice".to_string()]);
                 target.add_hint("bound", &[Hint::new('b', Spot::None()),
                     Hint::new('o', Spot::None()),
                     Hint::new('u', Spot::None()),

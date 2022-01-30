@@ -36,4 +36,4 @@ jobs:
           args: --release --all-features
       - name: test command
         run: |
-          target/release/wordie-solver -V
+          target/release/wordle-solver -V

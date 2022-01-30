@@ -18,8 +18,8 @@ struct Config {
     #[clap(short, long, default_value_t = 5, help = "length of one word")]
     word_length: usize,
 
-    #[clap(short, long, default_value_t = 6, help = "how many you can answer")]
-    answer_length: usize,
+    #[clap(short, long, default_value_t = 6, help = "number of answer you can guess")]
+    max_guess_count: usize,
 
     #[clap(short, long, hide_default_value = true, default_value = "", help = "dictionary path")]
     dict_path: String,
@@ -39,99 +39,98 @@ fn main() {
         }
     });
     println!("{}", Cyan.paint(format!("word length: {}", config.word_length)));
-    println!("{}", Cyan.paint(format!("number of answer you can guess: {}", config.answer_length)));
+    println!("{}", Cyan.paint(format!("number of answer you can guess: {}", config.max_guess_count)));
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &dictionary.extract_words(config.word_length)));
-    let mut states: InputStates = InputStates::new(config.word_length, config.answer_length);
+    let mut states: InputStates = InputStates::new(config.word_length, config.max_guess_count);
 
     loop {
         let remained_words_length = solver.remained_words_length();
         if remained_words_length == 0 {
             println!();
-            eprintln!("Remained words are empty, so I can't solve this. quit.");
+            eprintln!("Sorry, there are no matched words. quit.");
             std::process::exit(1);
         }
 
-        loop {
-            println!();
-            println!("{}", Style::new().bold().paint(format!("ROUND {}/{}", states.round_count + 1, config.answer_length)));
-            println!("There are {} words are remained.", remained_words_length.to_formatted_string(&Locale::en));
+        println!();
+        println!("{}", Style::new().bold().paint(format!("ROUND {}/{}", states.round_count + 1, config.max_guess_count)));
+        println!("There are {} words are remained.", remained_words_length.to_formatted_string(&Locale::en));
 
-            let mut state = InputState::new(config.word_length);
+        let mut state = InputState::new(config.word_length);
 
-            let guess_types = &[
-                "Use suggestions",
-                "Input manually",
-            ];
-            let selected_type_idx = Select::with_theme(&ColorfulTheme::default())
-                .with_prompt("Select guessing type")
-                .default(0)
-                .items(&guess_types[..])
-                .interact()
-                .unwrap();
-            match selected_type_idx {
-                0 => {
-                    let suggested = solver.suggest();
-                    let selected = FuzzySelect::with_theme(&ColorfulTheme::default())
-                        .with_prompt("Guess")
-                        .default(0)
-                        .items(suggested)
-                        .interact()
-                        .unwrap();
-                    state.add_word(&suggested[selected]).unwrap();
-                }
-                1 => {
-                    let input: String = Input::with_theme(&ColorfulTheme::default())
-                        .with_prompt("Guess")
-                        .validate_with({
-                            move |input: &String| -> Result<(), &str> {
-                                if input.len() != config.word_length {
-                                    return Err("invalid length");
-                                }
-                                Ok(())
+        let guess_types = &[
+            "Use suggestions",
+            "Input manually",
+        ];
+        let selected_type_idx = Select::with_theme(&ColorfulTheme::default())
+            .with_prompt("Select guessing type")
+            .default(0)
+            .items(&guess_types[..])
+            .interact()
+            .unwrap();
+        match selected_type_idx {
+            0 => {
+                let suggested = solver.suggest();
+                let selected = FuzzySelect::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Guess")
+                    .default(0)
+                    .items(suggested)
+                    .interact()
+                    .unwrap();
+                state.add_word(&suggested[selected]).unwrap();
+            }
+            1 => {
+                let input: String = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Guess")
+                    .validate_with({
+                        move |input: &String| -> Result<(), &str> {
+                            if input.len() != config.word_length {
+                                return Err("invalid length");
                             }
-                        })
-                        .interact_text()
-                        .unwrap();
-                    state.add_word(&input).unwrap();
-                }
-                _ => {
-                    eprintln!("failed to recognize selection");
-                    std::process::exit(1);
-                }
+                            Ok(())
+                        }
+                    })
+                    .interact_text()
+                    .unwrap();
+                state.add_word(&input).unwrap();
             }
-
-            println!("Input answer like this:");
-            println!("{}", states.preview(&state).unwrap());
-
-            if Confirm::with_theme(&ColorfulTheme::default())
-                .with_prompt(format!("Is \"{}\" corrected answer?", state.word().unwrap().to_uppercase()))
-                .interact()
-                .unwrap()
-            {
-                state.correct();
-                println!("{}\n", Style::new().bold().paint("Congratulation!!"));
-                println!("{}", states.preview(&state).unwrap());
-                std::process::exit(0);
-            }
-
-            if states.is_final_round() {
-                println!("{}\n", Style::new().bold().paint(format!("X/{} GAME OVER!!", config.answer_length)));
-                println!("{}", states.preview(&state).unwrap());
+            _ => {
+                eprintln!("failed to recognize selection");
                 std::process::exit(1);
             }
-            states.increment_round();
+        }
 
+        println!("Input answer like this:");
+        println!("{}", states.preview(&state).unwrap());
+
+        if Confirm::with_theme(&ColorfulTheme::default())
+            .with_prompt(format!("Is \"{}\" corrected answer?", state.word().unwrap().to_uppercase()))
+            .interact()
+            .unwrap()
+        {
+            state.correct();
+            println!("{}", Style::new().bold().paint("Congratulation!!"));
+            println!("{}", states.preview(&state).unwrap());
+            std::process::exit(0);
+        }
+
+        if states.is_final_round() {
+            println!("{}", Style::new().bold().paint(format!("X/{} GAME OVER!!", config.max_guess_count)));
+            println!("{}", states.preview(&state).unwrap());
+            std::process::exit(1);
+        }
+        states.increment_round();
+
+        loop {
             println!(r#"Input {} numbers in order as hint;
-· nowhere   -> {}
-· somewhere -> {}
-· just      -> {}"#,
+- nowhere   -> {}
+- somewhere -> {}
+- just      -> {}"#,
                      config.word_length,
                      colorize(&HintInputType::Nowhere, "0"),
                      colorize(&HintInputType::Somewhere, "1"),
                      colorize(&HintInputType::Just, "2"),
             );
-
             if states.round_count == 1 {
                 println!("{}{}{}{}{}{}",
                          Style::new().fg(RGB(128, 128, 128)).paint("e.g.) SOLVE + 10221 => "),
@@ -168,7 +167,7 @@ fn main() {
             println!("{}", states.preview(&state).unwrap());
 
             if Confirm::with_theme(&ColorfulTheme::default())
-                .with_prompt("Is OK?")
+                .with_prompt("Is this hint OK?")
                 .default(true)
                 .interact()
                 .unwrap()
@@ -176,7 +175,7 @@ fn main() {
                 let (word, hints) = state.get().unwrap();
                 if Hint::all_at(hints) {
                     state.correct();
-                    println!("{}\n", Style::new().bold().paint("Wow, It's correct! Congrats!"));
+                    println!("{}", Style::new().bold().paint("Wow, It's correct! Congrats!"));
                     println!("{}", states.preview(&state).unwrap());
                     std::process::exit(0);
                 }
@@ -207,16 +206,16 @@ fn colorize<'a>(hint_type: &'a HintInputType, text: &'a str) -> ANSIGenericStrin
 }
 
 struct InputState {
-    width: usize,
+    word_length: usize,
     word: Option<String>,
     hint: Vec<Hint>,
     is_correct: bool,
 }
 
 impl InputState {
-    pub fn new(width: usize) -> Self {
+    pub fn new(word_length: usize) -> Self {
         InputState {
-            width,
+            word_length,
             word: None,
             hint: vec![],
             is_correct: false,
@@ -224,7 +223,7 @@ impl InputState {
     }
 
     pub fn add_word(&mut self, input: &str) -> Result<(), &'static str> {
-        if input.trim().len() != self.width {
+        if input.trim().len() != self.word_length {
             return Result::Err("invalid word length");
         }
         self.word = Option::from(input.trim().to_string());
@@ -236,7 +235,7 @@ impl InputState {
             return Result::Err("add word before");
         }
         let trimmed = input.trim();
-        if trimmed.len() != self.width {
+        if trimmed.len() != self.word_length {
             return Result::Err("invalid length");
         }
         for (i, hint_c) in trimmed.chars().enumerate() {
@@ -321,15 +320,15 @@ impl InputState {
 }
 
 struct InputStates {
-    word_width: usize,
-    answer_width: usize,
+    word_length: usize,
+    max_guess_count: usize,
     states: Vec<InputState>,
     pub round_count: i32,
 }
 
 impl InputStates {
-    pub fn new(word_width: usize, answer_width: usize) -> Self {
-        InputStates { states: Vec::new(), word_width, answer_width, round_count: 0 }
+    pub fn new(word_length: usize, max_guess_count: usize) -> Self {
+        InputStates { states: Vec::new(), word_length, max_guess_count, round_count: 0 }
     }
 
     pub fn add(&mut self, state: InputState) {
@@ -361,15 +360,13 @@ impl InputStates {
     }
 
     fn pretty_preview(&self, word_strs: &[String]) -> String {
-        let header_footer: String = format!("+{}+", "-".repeat(self.word_width));
-
-        let mut results: Vec<String> = Vec::new();
-        results.push(header_footer.clone());
-        for i in 0..self.answer_width {
+        let header_footer: String = format!("+{}+", "-".repeat(self.word_length));
+        let mut results: Vec<String> = vec![header_footer.clone()];
+        for i in 0..self.max_guess_count {
             if i < word_strs.len() {
                 results.push(format!("|{}|", word_strs[i]));
             } else {
-                results.push(format!("|{}|", " ".repeat(self.word_width)));
+                results.push(format!("|{}|", " ".repeat(self.word_length)));
             }
         }
         results.push(header_footer);
@@ -381,7 +378,7 @@ impl InputStates {
     }
 
     fn is_final_round(&self) -> bool {
-        (self.round_count + 1) == self.answer_width as i32
+        (self.round_count + 1) == self.max_guess_count as i32
     }
 }
 
@@ -396,7 +393,7 @@ mod tests {
         #[test]
         fn new() {
             let actual = InputState::new(5);
-            assert_eq!(actual.width, 5);
+            assert_eq!(actual.word_length, 5);
         }
 
         #[cfg(test)]

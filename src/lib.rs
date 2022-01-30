@@ -21,10 +21,7 @@ impl Hint {
     pub fn all_at(hints: &[Hint]) -> bool {
         hints.iter()
             .filter(|h| {
-                match h.spot {
-                    Spot::At(_) => true,
-                    _ => false
-                }
+                matches!(h.spot, Spot::At(_))
             })
             .count() == hints.len()
     }
