@@ -7,7 +7,7 @@ pub struct SimpleSolver {
 }
 
 impl SimpleSolver {
-    pub fn new(width: usize, dict_words: &Vec<String>) -> SimpleSolver {
+    pub fn new(width: usize, dict_words: &[String]) -> SimpleSolver {
         SimpleSolver {
             width,
             dict_words: dict_words.iter()

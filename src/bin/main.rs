@@ -362,9 +362,7 @@ impl InputStates {
 
     fn pretty_preview(&self, word_strs: &[String]) -> String {
         let header_footer: String = format!("+{}+", "-".repeat(self.word_length));
-
-        let mut results: Vec<String> = Vec::new();
-        results.push(header_footer.clone());
+        let mut results: Vec<String> = vec![header_footer.clone()];
         for i in 0..self.answer_length {
             if i < word_strs.len() {
                 results.push(format!("|{}|", word_strs[i]));
