@@ -285,7 +285,11 @@ impl InputStates {
                 return Err(e);
             }
         }
-        Ok(results.join("\n"))
+        Ok(InputStates::pretty_preview(&results))
+    }
+
+    fn pretty_preview(word_strs: &[String]) -> String {
+        word_strs.join("\n")
     }
 }
 
