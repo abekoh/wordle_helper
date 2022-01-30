@@ -36,7 +36,7 @@ fn main() {
     });
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &dictionary.extract_words(config.word_length)));
-    let mut states: InputStates = InputStates::new();
+    let mut states: InputStates = InputStates::new(config.word_length);
 
     loop {
         let remained_words_length = solver.remained_words_length();
@@ -378,7 +378,7 @@ mod tests {
 
         #[test]
         fn pretty_preview() {
-            let target = InputStates::new();
+            let target = InputStates::new(5);
             let actual = target.pretty_preview(&vec![
                 "ABCDE".to_string(),
                 "FGHIJ".to_string(),
