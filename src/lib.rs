@@ -1,5 +1,5 @@
 pub mod simple;
-pub mod fetch;
+pub mod dictionary;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Spot {
