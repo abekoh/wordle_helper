@@ -39,7 +39,7 @@ fn main() {
         }
     });
     println!("{}", Cyan.paint(format!("word length: {}", config.word_length)));
-    println!("{}", Cyan.paint(format!("# of answer you can guess: {}", config.answer_length)));
+    println!("{}", Cyan.paint(format!("number of answer you can guess: {}", config.answer_length)));
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &dictionary.extract_words(config.word_length)));
     let mut states: InputStates = InputStates::new(config.word_length, config.answer_length);
