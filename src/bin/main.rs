@@ -24,15 +24,15 @@ struct Config {
 fn main() {
     let config = Config::parse();
 
-    let dictionary: Box<dyn Dictionary> = Box::new(TxtDictionary::new(&config.dict_path));
-    let words = match dictionary.extract_words(config.word_length) {
-        Ok(r) => r,
+    let dictionary: Box<dyn Dictionary> = Box::new(match TxtDictionary::new(&config.dict_path) {
+        Ok(d) => d,
         Err(e) => {
-            eprintln!("failed to load: {}", e);
+            eprintln!("failed to load dictionary: {}", e);
             std::process::exit(1);
         }
-    };
-    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &words));
+    });
+
+    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &dictionary.extract_words(config.word_length)));
     let mut states: InputStates = InputStates::new();
 
     println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));

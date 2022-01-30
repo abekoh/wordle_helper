@@ -27,5 +27,5 @@ pub trait Solver {
 }
 
 pub trait Dictionary {
-    fn extract_words(&self, word_length: usize) -> Result<Vec<String>, &str>;
+    fn extract_words(&self, word_length: usize) -> Vec<String>;
 }

@@ -4,24 +4,19 @@ use std::io::BufRead;
 use crate::Dictionary;
 
 pub struct TxtDictionary {
-    dict_path: String,
+    file: File,
 }
 
 impl TxtDictionary {
-    pub fn new(path: &str) -> Self {
-        TxtDictionary { dict_path: path.to_string() }
+    pub fn new(path: &str) -> io::Result<Self> {
+        let file = File::open(path.to_string())?;
+        Ok(TxtDictionary { file })
     }
 }
 
 impl Dictionary for TxtDictionary {
-    fn extract_words(&self, word_length: usize) -> Result<Vec<String>, &str> {
-        let file = match File::open(self.dict_path.to_string()) {
-            Ok(v) => v,
-            Err(_) => {
-                return Err("failed to open file");
-            }
-        };
-        let dict: Vec<String> = io::BufReader::new(file)
+    fn extract_words(&self, word_length: usize) -> Vec<String> {
+        let dict: Vec<String> = io::BufReader::new(&self.file)
             .lines()
             .filter_map(|e| {
                 e.ok()
@@ -33,6 +28,6 @@ impl Dictionary for TxtDictionary {
                 String::from(line.trim())
             })
             .collect();
-        Ok(dict)
+        dict
     }
 }
