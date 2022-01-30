@@ -27,10 +27,8 @@ impl SimpleSolver {
                 && hints
                 .iter()
                 .filter(|h| {
-                    match h.spot {
-                        Spot::At(_) => h.letter == hint.letter,
-                        _ => false,
-                    }
+                    h.letter == hint.letter
+                        && (matches!(h.spot, Spot::InWithout(_)) || matches!(h.spot, Spot::At(_)))
                 }).count() > 0 {
                 continue;
             }
@@ -95,7 +93,6 @@ impl Solver for SimpleSolver {
 mod tests {
     use super::*;
 
-
     #[cfg(test)]
     mod new {
         use super::*;
@@ -119,19 +116,43 @@ mod tests {
         }
     }
 
-    #[test]
-    fn shrink_words() {
-        let actual = SimpleSolver::shrink_hints(&[Hint { letter: 'r', spot: Spot::None() },
-            Hint { letter: 'o', spot: Spot::At(1) },
-            Hint { letter: 'b', spot: Spot::None() },
-            Hint { letter: 'o', spot: Spot::None() },
-            Hint { letter: 't', spot: Spot::At(4) }]);
-        assert_eq!(actual, vec![
-            Hint { letter: 'r', spot: Spot::None() },
-            Hint { letter: 'o', spot: Spot::At(1) },
-            Hint { letter: 'b', spot: Spot::None() },
-            Hint { letter: 't', spot: Spot::At(4) },
-        ])
+    #[cfg(test)]
+    mod shrink_words {
+        use super::*;
+
+        #[test]
+        fn remove_none_when_has_at() {
+            let actual = SimpleSolver::shrink_hints(&[
+                Hint { letter: 'r', spot: Spot::None() },
+                Hint { letter: 'o', spot: Spot::At(1) },
+                Hint { letter: 'b', spot: Spot::None() },
+                Hint { letter: 'o', spot: Spot::None() },
+                Hint { letter: 't', spot: Spot::At(4) }
+            ]);
+            assert_eq!(actual, vec![
+                Hint { letter: 'r', spot: Spot::None() },
+                Hint { letter: 'o', spot: Spot::At(1) },
+                Hint { letter: 'b', spot: Spot::None() },
+                Hint { letter: 't', spot: Spot::At(4) },
+            ])
+        }
+
+        #[test]
+        fn remove_none_when_has_in_without() {
+            let actual = SimpleSolver::shrink_hints(&[
+                Hint { letter: 't', spot: Spot::None() },
+                Hint { letter: 'a', spot: Spot::InWithout(1) },
+                Hint { letter: 'y', spot: Spot::InWithout(2) },
+                Hint { letter: 'r', spot: Spot::None() },
+                Hint { letter: 'a', spot: Spot::None() }
+            ]);
+            assert_eq!(actual, vec![
+                Hint { letter: 't', spot: Spot::None() },
+                Hint { letter: 'a', spot: Spot::InWithout(1) },
+                Hint { letter: 'y', spot: Spot::InWithout(2) },
+                Hint { letter: 'r', spot: Spot::None() },
+            ]);
+        }
     }
 
     #[cfg(test)]
