@@ -1,6 +1,6 @@
-use std::fs::File;
+use std::fs::{File};
 use std::io;
-use std::io::BufRead;
+use std::io::{BufRead, copy};
 use std::env;
 use std::path::Path;
 use crate::Dictionary;
@@ -23,8 +23,14 @@ fn default_dict_path() -> Box<Path> {
     buf.into_boxed_path()
 }
 
-fn fetch_from_english_words(path: &Path) -> io::Result<()> {
-    todo!()
+const ENGLISH_WORDS_URL: &str = "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt";
+
+fn fetch_from_english_words(path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    let resp = reqwest::blocking::get(ENGLISH_WORDS_URL)?;
+    let mut dest = File::create(path)?;
+    let content = resp.text()?;
+    copy(&mut content.as_bytes(), &mut dest)?;
+    Ok(())
 }
 
 pub struct TxtDictionary {
@@ -32,7 +38,7 @@ pub struct TxtDictionary {
 }
 
 impl TxtDictionary {
-    pub fn new(path: &str) -> io::Result<Self> {
+    pub fn new(path: &str) -> Result<Self, Box<dyn std::error::Error>> {
         if path == "" {
             let default_path = default_dict_path();
             if !default_path.exists() {
