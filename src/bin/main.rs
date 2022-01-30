@@ -12,6 +12,10 @@ use wordle_solver::{Dictionary, Hint, Solver, Spot};
 use wordle_solver::simple::SimpleSolver;
 use wordle_solver::txt::TxtDictionary;
 
+const BACK_GREEN: Colour = RGB(83, 141, 78);
+const BACK_YELLOW: Colour = RGB(180, 159, 58);
+const BACK_GRAY: Colour = RGB(58, 58, 60);
+
 #[derive(Parser)]
 #[clap(version, about, long_about = None)]
 struct Config {
@@ -114,6 +118,15 @@ fn main() {
                 std::process::exit(0);
             }
 
+            println!(r#"Input {} numbers as hint;
+· nowhere   -> {}
+· somewhere -> {}
+· just      -> {}"#,
+                     config.word_length,
+                     Style::new().on(BACK_GRAY).fg(White).bold().paint("0"),
+                     Style::new().on(BACK_YELLOW).fg(White).bold().paint("1"),
+                     Style::new().on(BACK_GREEN).fg(White).bold().paint("2"),
+            );
             let hint_input = Input::with_theme(&ColorfulTheme::default())
                 .with_prompt("Hint")
                 .validate_with({
@@ -165,10 +178,6 @@ struct InputState {
     hint: Vec<Hint>,
     is_correct: bool,
 }
-
-const BACK_GREEN: Colour = RGB(83, 141, 78);
-const BACK_YELLOW: Colour = RGB(180, 159, 58);
-const BACK_GRAY: Colour = RGB(58, 58, 60);
 
 impl InputState {
     pub fn new(width: usize) -> Self {
