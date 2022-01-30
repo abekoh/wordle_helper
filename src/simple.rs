@@ -181,7 +181,7 @@ mod tests {
                     Hint { letter: 'l', spot: Spot::At(3) },
                     Hint { letter: 'l', spot: Spot::None() },
                 ]);
-                assert_eq!(actual.guess(), &vec![String::from("early")]);
+                assert_eq!(actual.suggest(), &vec![String::from("early")]);
             }
         }
 
