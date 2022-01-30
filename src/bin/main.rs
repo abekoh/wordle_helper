@@ -118,7 +118,7 @@ fn main() {
                 std::process::exit(0);
             }
 
-            println!(r#"Input {} numbers as hint;
+            println!(r#"Input {} numbers in order as hint;
 · nowhere   -> {}
 · somewhere -> {}
 · just      -> {}"#,
@@ -127,6 +127,8 @@ fn main() {
                      Style::new().on(BACK_YELLOW).fg(White).bold().paint("1"),
                      Style::new().on(BACK_GREEN).fg(White).bold().paint("2"),
             );
+            println!("e.g. {}+");
+
             let hint_input = Input::with_theme(&ColorfulTheme::default())
                 .with_prompt("Hint")
                 .validate_with({
