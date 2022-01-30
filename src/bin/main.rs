@@ -104,7 +104,7 @@ fn main() {
             println!("{}", states.preview(&state).unwrap());
 
             if Confirm::with_theme(&ColorfulTheme::default())
-                .with_prompt("Is corrected answer?")
+                .with_prompt(format!("Is \"{}\" corrected answer?", state.word().unwrap().to_uppercase()))
                 .interact()
                 .unwrap()
             {
@@ -238,6 +238,13 @@ impl InputState {
             }
         }
         Result::Ok(())
+    }
+
+    pub fn word(&self) -> Option<&String> {
+        match &self.word {
+            Some(w) => Some(w),
+            None => None,
+        }
     }
 
     pub fn correct(&mut self) {
