@@ -33,12 +33,21 @@ fn default_dict_path() -> Box<Path> {
 const ENGLISH_WORDS_URL: &str = "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt";
 
 fn fetch_from_english_words(path: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    println!("download {} into {}", ENGLISH_WORDS_URL, path.to_str().unwrap());
+    println!("{}",
+             Style::new().fg(Yellow).paint(
+                 format!("Downloading {}", ENGLISH_WORDS_URL)
+             )
+    );
     fs::create_dir_all(path.parent().unwrap())?;
     let resp = reqwest::blocking::get(ENGLISH_WORDS_URL)?;
     let mut dest = File::create(path)?;
     let content = resp.text()?;
     copy(&mut content.as_bytes(), &mut dest)?;
+    println!("{}",
+             Style::new().fg(Yellow).paint(
+                 "Complete!"
+             )
+    );
     Ok(())
 }
 
@@ -58,7 +67,7 @@ impl TxtDictionary {
                 );
                 println!("{}",
                          Style::new().fg(Yellow).paint(
-                             format!("So I should download dictionary from https://github.com/dwyl/english-words (about 4.04MB)")
+                             "So I should download dictionary from https://github.com/dwyl/english-words (about 4.04MB)"
                          )
                 );
                 if Confirm::with_theme(&ColorfulTheme::default())
