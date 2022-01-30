@@ -1,6 +1,6 @@
 use std::iter::zip;
 
-use ansi_term::{Colour, Style};
+use ansi_term::{ANSIGenericString, Colour, Style};
 use ansi_term::Color::{RGB, White};
 use ansi_term::Colour::Cyan;
 use clap::Parser;
@@ -11,10 +11,6 @@ use num_format::{Locale, ToFormattedString};
 use wordle_solver::{Dictionary, Hint, Solver, Spot};
 use wordle_solver::simple::SimpleSolver;
 use wordle_solver::txt::TxtDictionary;
-
-const BACK_GREEN: Colour = RGB(83, 141, 78);
-const BACK_YELLOW: Colour = RGB(180, 159, 58);
-const BACK_GRAY: Colour = RGB(58, 58, 60);
 
 #[derive(Parser)]
 #[clap(version, about, long_about = None)]
@@ -123,11 +119,10 @@ fn main() {
 · somewhere -> {}
 · just      -> {}"#,
                      config.word_length,
-                     Style::new().on(BACK_GRAY).fg(White).bold().paint("0"),
-                     Style::new().on(BACK_YELLOW).fg(White).bold().paint("1"),
-                     Style::new().on(BACK_GREEN).fg(White).bold().paint("2"),
+                     colorize(HintInputType::Nowhere, "0"),
+                     colorize(HintInputType::Somewhere, "1"),
+                     colorize(HintInputType::Just, "2"),
             );
-            println!("e.g. {}+");
 
             let hint_input = Input::with_theme(&ColorfulTheme::default())
                 .with_prompt("Hint")
@@ -172,6 +167,24 @@ fn main() {
             }
         }
     }
+}
+
+const BACK_GREEN: Colour = RGB(83, 141, 78);
+const BACK_YELLOW: Colour = RGB(180, 159, 58);
+const BACK_GRAY: Colour = RGB(58, 58, 60);
+
+enum HintInputType {
+    Nowhere,
+    Somewhere,
+    Just,
+}
+
+fn colorize(hint_type: HintInputType, text: &str) -> ANSIGenericString<str> {
+    return match hint_type {
+        HintInputType::Nowhere => Style::new().on(BACK_GRAY).fg(White).bold().paint(text.to_string()),
+        HintInputType::Somewhere => Style::new().on(BACK_YELLOW).fg(White).bold().paint(text.to_string()),
+        HintInputType::Just => Style::new().on(BACK_GREEN).fg(White).bold().paint(text.to_string()),
+    };
 }
 
 struct InputState {
