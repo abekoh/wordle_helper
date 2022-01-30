@@ -208,7 +208,7 @@ impl InputState {
             return Result::Err("word are empty");
         }
         if self.is_correct {
-            return Result::Ok(format!("{}", Style::new().on(BACK_GREEN).fg(White).bold().paint(self.word.as_ref().unwrap())));
+            return Result::Ok(format!("{}", Style::new().on(BACK_GREEN).fg(White).bold().paint(self.word.as_ref().unwrap().to_uppercase())));
         }
         if self.hint.is_empty() {
             return Result::Err("hints are empty");
@@ -216,9 +216,9 @@ impl InputState {
         let mut chars: Vec<String> = Vec::new();
         for (c, hint) in zip(self.word.as_ref().unwrap().chars(), &self.hint) {
             let res = match hint.spot {
-                Spot::None() => format!("{}", Style::new().on(BACK_GRAY).fg(White).bold().paint(c.to_string())),
-                Spot::InWithout(_) => format!("{}", Style::new().on(BACK_YELLOW).fg(White).bold().paint(c.to_string())),
-                Spot::At(_) => format!("{}", Style::new().on(BACK_GREEN).fg(White).bold().paint(c.to_string())),
+                Spot::None() => format!("{}", Style::new().on(BACK_GRAY).fg(White).bold().paint(c.to_string().to_uppercase())),
+                Spot::InWithout(_) => format!("{}", Style::new().on(BACK_YELLOW).fg(White).bold().paint(c.to_string().to_uppercase())),
+                Spot::At(_) => format!("{}", Style::new().on(BACK_GREEN).fg(White).bold().paint(c.to_string().to_uppercase())),
             };
             chars.push(res);
         }
