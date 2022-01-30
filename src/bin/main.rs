@@ -30,6 +30,7 @@ fn main() {
     let dictionary: Box<dyn Dictionary> = Box::new(match TxtDictionary::new(&config.dict_path) {
         Ok(d) => d,
         Err(e) => {
+            println!();
             eprintln!("failed to load dictionary: {}", e);
             std::process::exit(1);
         }
@@ -39,17 +40,17 @@ fn main() {
     let mut states: InputStates = InputStates::new();
 
     loop {
-        println!();
         let remained_words_length = solver.remained_words_length();
-
         if remained_words_length == 0 {
+            println!();
             eprintln!("Remained words are empty, so I can't solve this. quit.");
             std::process::exit(1);
         }
 
-        println!("There are {} words are remained.", remained_words_length.to_formatted_string(&Locale::en));
-
         loop {
+            println!();
+            println!("There are {} words are remained.", remained_words_length.to_formatted_string(&Locale::en));
+
             let mut state = InputState::new(config.word_length);
 
             let guess_types = &[

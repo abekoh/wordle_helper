@@ -60,6 +60,7 @@ impl TxtDictionary {
         if path.is_empty() {
             let default_path = default_dict_path();
             if !default_path.exists() {
+                println!();
                 println!("{}",
                          Style::new().fg(Yellow).paint(
                              format!("Default dictionary is not found at {}", default_path.to_str().unwrap())
