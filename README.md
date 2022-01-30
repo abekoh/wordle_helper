@@ -1,5 +1,9 @@
 # wordle_solver
 
+## setup
+
+use nightly build
+
 ## dictionary
 
-copied from https://github.com/dwyl/english-words
+use https://github.com/dwyl/english-words
