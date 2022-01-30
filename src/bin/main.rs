@@ -38,7 +38,15 @@ fn main() {
     let mut states: InputStates = InputStates::new();
 
     loop {
-        println!("\nThere are {} words are remained.", solver.remained_words_length().to_formatted_string(&Locale::en));
+        println!();
+        let remained_words_length = solver.remained_words_length();
+
+        if remained_words_length == 0 {
+            eprintln!("remained words are nothing, so I can't solve this. quit.");
+            std::process::exit(1);
+        }
+
+        println!("There are {} words are remained.", remained_words_length.to_formatted_string(&Locale::en));
 
         loop {
             let mut state = InputState::new(config.word_length);
