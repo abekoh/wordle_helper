@@ -42,7 +42,7 @@ fn main() {
         let remained_words_length = solver.remained_words_length();
 
         if remained_words_length == 0 {
-            eprintln!("remained words are nothing, so I can't solve this. quit.");
+            eprintln!("Remained words are empty, so I can't solve this. quit.");
             std::process::exit(1);
         }
 
