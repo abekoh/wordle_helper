@@ -15,7 +15,7 @@ fn default_dict_path() -> Box<Path> {
         Ok(v) => Path::new(v.as_str()).join(DEFAULT_CACHE_DIR).join(DEFAULT_FILENAME),
         Err(_) => match env::var("HOME") {
             Ok(v) => {
-                Path::new(v.as_str()).join(".config").join(DEFAULT_CACHE_DIR).join(DEFAULT_FILENAME)
+                Path::new(v.as_str()).join(".cache").join(DEFAULT_CACHE_DIR).join(DEFAULT_FILENAME)
             }
             Err(_) => {
                 Path::new("/tmp").join(DEFAULT_CACHE_DIR).join(DEFAULT_FILENAME)
