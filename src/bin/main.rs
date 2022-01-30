@@ -24,11 +24,12 @@ struct Config {
 fn main() {
     let config = Config::parse();
 
-    println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
+    println!("{}", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
 
     let dictionary: Box<dyn Dictionary> = Box::new(match TxtDictionary::new(&config.dict_path) {
         Ok(d) => d,
         Err(e) => {
+            println!();
             eprintln!("failed to load dictionary: {}", e);
             std::process::exit(1);
         }
@@ -38,9 +39,17 @@ fn main() {
     let mut states: InputStates = InputStates::new();
 
     loop {
-        println!("There are {} words are remained.\n", solver.remained_words_length().to_formatted_string(&Locale::en));
+        let remained_words_length = solver.remained_words_length();
+        if remained_words_length == 0 {
+            println!();
+            eprintln!("Remained words are empty, so I can't solve this. quit.");
+            std::process::exit(1);
+        }
 
         loop {
+            println!();
+            println!("There are {} words are remained.", remained_words_length.to_formatted_string(&Locale::en));
+
             let mut state = InputState::new(config.word_length);
 
             let guess_types = &[
@@ -119,6 +128,12 @@ fn main() {
                 .unwrap()
             {
                 let (word, hints) = state.get().unwrap();
+                if Hint::all_at(hints) {
+                    state.correct();
+                    println!("{}\n", Style::new().bold().paint("Wow, It's correct! Congrats!"));
+                    println!("{}", states.preview(&state).unwrap());
+                    std::process::exit(0);
+                }
                 solver.add_hint(word, hints);
                 states.add(state);
                 break;
