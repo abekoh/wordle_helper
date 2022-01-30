@@ -122,67 +122,68 @@ fn main() {
             }
             states.increment_round();
 
-            println!(r#"Input {} numbers in order as hint;
+            loop {
+                println!(r#"Input {} numbers in order as hint;
 · nowhere   -> {}
 · somewhere -> {}
 · just      -> {}"#,
-                     config.word_length,
-                     colorize(&HintInputType::Nowhere, "0"),
-                     colorize(&HintInputType::Somewhere, "1"),
-                     colorize(&HintInputType::Just, "2"),
-            );
-
-            if states.round_count == 1 {
-                println!("{}{}{}{}{}{}",
-                         Style::new().fg(RGB(128, 128, 128)).paint("e.g.) SOLVE + 10221 => "),
-                         colorize(&HintInputType::Somewhere, "S"),
-                         colorize(&HintInputType::Nowhere, "O"),
-                         colorize(&HintInputType::Just, "L"),
-                         colorize(&HintInputType::Just, "V"),
-                         colorize(&HintInputType::Somewhere, "E"),
+                         config.word_length,
+                         colorize(&HintInputType::Nowhere, "0"),
+                         colorize(&HintInputType::Somewhere, "1"),
+                         colorize(&HintInputType::Just, "2"),
                 );
-            }
-
-            let hint_input = Input::with_theme(&ColorfulTheme::default())
-                .with_prompt("Hint")
-                .validate_with({
-                    move |input: &String| -> Result<(), &str> {
-                        if input.len() != config.word_length {
-                            return Err("invalid length");
-                        }
-                        if input.chars()
-                            .filter(move |c| {
-                                *c == '0' || *c == '1' || *c == '2'
-                            })
-                            .count() != config.word_length {
-                            return Err("invalid number contains");
-                        }
-                        Ok(())
-                    }
-                })
-                .interact_text()
-                .unwrap();
-            state.add_hint(&hint_input).unwrap();
-
-
-            println!("{}", states.preview(&state).unwrap());
-
-            if Confirm::with_theme(&ColorfulTheme::default())
-                .with_prompt("Is OK?")
-                .default(true)
-                .interact()
-                .unwrap()
-            {
-                let (word, hints) = state.get().unwrap();
-                if Hint::all_at(hints) {
-                    state.correct();
-                    println!("{}\n", Style::new().bold().paint("Wow, It's correct! Congrats!"));
-                    println!("{}", states.preview(&state).unwrap());
-                    std::process::exit(0);
+                if states.round_count == 1 {
+                    println!("{}{}{}{}{}{}",
+                             Style::new().fg(RGB(128, 128, 128)).paint("e.g.) SOLVE + 10221 => "),
+                             colorize(&HintInputType::Somewhere, "S"),
+                             colorize(&HintInputType::Nowhere, "O"),
+                             colorize(&HintInputType::Just, "L"),
+                             colorize(&HintInputType::Just, "V"),
+                             colorize(&HintInputType::Somewhere, "E"),
+                    );
                 }
-                solver.add_hint(word, hints);
-                states.add(state);
-                break;
+
+                let hint_input = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Hint")
+                    .validate_with({
+                        move |input: &String| -> Result<(), &str> {
+                            if input.len() != config.word_length {
+                                return Err("invalid length");
+                            }
+                            if input.chars()
+                                .filter(move |c| {
+                                    *c == '0' || *c == '1' || *c == '2'
+                                })
+                                .count() != config.word_length {
+                                return Err("invalid number contains");
+                            }
+                            Ok(())
+                        }
+                    })
+                    .interact_text()
+                    .unwrap();
+                state.add_hint(&hint_input).unwrap();
+
+
+                println!("{}", states.preview(&state).unwrap());
+
+                if Confirm::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Is OK?")
+                    .default(true)
+                    .interact()
+                    .unwrap()
+                {
+                    let (word, hints) = state.get().unwrap();
+                    if Hint::all_at(hints) {
+                        state.correct();
+                        println!("{}\n", Style::new().bold().paint("Wow, It's correct! Congrats!"));
+                        println!("{}", states.preview(&state).unwrap());
+                        std::process::exit(0);
+                    }
+                    solver.add_hint(word, hints);
+                    states.add(state);
+                    break;
+                }
             }
         }
     }
