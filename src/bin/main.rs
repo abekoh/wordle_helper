@@ -97,6 +97,7 @@ fn main() {
                 std::process::exit(0);
             }
 
+            println!("{}", states.preview(&state).unwrap());
             let hint_input = Input::with_theme(&ColorfulTheme::default())
                 .with_prompt("Hint")
                 .validate_with({
@@ -203,7 +204,7 @@ impl InputState {
         self.is_correct = true;
     }
 
-    pub fn is_only_word(&self) -> booll {
+    pub fn is_only_word(&self) -> bool {
         self.word.is_some() && self.hint.is_empty()
     }
 
