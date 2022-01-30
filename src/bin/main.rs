@@ -1,10 +1,7 @@
-use std::fs::File;
-use std::io;
-use std::io::BufRead;
 use std::iter::zip;
 
-use ansi_term::Color::{RGB, White};
 use ansi_term::{Colour, Style};
+use ansi_term::Color::{RGB, White};
 use clap::Parser;
 use dialoguer::{Confirm, FuzzySelect, Input};
 use dialoguer::theme::ColorfulTheme;
@@ -230,7 +227,6 @@ impl InputStates {
 #[cfg(test)]
 mod tests {
     use super::*;
-
 
     #[cfg(test)]
     mod input_state {

@@ -1,3 +1,7 @@
+use std::fs::File;
+use std::io;
+use std::io::BufRead;
+
 pub fn get_words(dict_path: &str) -> Vec<String> {
     let file = match File::open(dict_path) {
         Ok(v) => v,
