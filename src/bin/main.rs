@@ -3,7 +3,7 @@ use std::iter::zip;
 use ansi_term::{Colour, Style};
 use ansi_term::Color::{RGB, White};
 use clap::Parser;
-use dialoguer::{Confirm, FuzzySelect, Input};
+use dialoguer::{Confirm, FuzzySelect, Input, Select};
 use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
 
@@ -43,14 +43,39 @@ fn main() {
         loop {
             let mut state = InputState::new(config.word_length);
 
-            let suggested = solver.suggest();
-            let selected = FuzzySelect::with_theme(&ColorfulTheme::default())
-                .with_prompt("Guess")
+            let guess_types = &[
+                "Use suggestions",
+                "Input manually",
+            ];
+            let selected_type_idx = Select::with_theme(&ColorfulTheme::default())
+                .with_prompt("Select guessing type")
                 .default(0)
-                .items(suggested)
+                .items(&guess_types[..])
                 .interact()
                 .unwrap();
-            state.add_word(&suggested[selected]).unwrap();
+            match selected_type_idx {
+                0 => {
+                    let suggested = solver.suggest();
+                    let selected = FuzzySelect::with_theme(&ColorfulTheme::default())
+                        .with_prompt("Guess")
+                        .default(0)
+                        .items(suggested)
+                        .interact()
+                        .unwrap();
+                    state.add_word(&suggested[selected]).unwrap();
+                }
+                1 => {
+                    let input: String = Input::with_theme(&ColorfulTheme::default())
+                        .with_prompt("Guess")
+                        .interact_text()
+                        .unwrap();
+                    state.add_word(&input).unwrap();
+                }
+                _ => {
+                    eprintln!("failed to recognize selection");
+                    std::process::exit(1);
+                }
+            }
 
             if Confirm::with_theme(&ColorfulTheme::default())
                 .with_prompt("Correct?")
