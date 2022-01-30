@@ -285,11 +285,17 @@ impl InputStates {
                 return Err(e);
             }
         }
-        Ok(InputStates::pretty_preview(&results))
+        Ok(InputStates::pretty_preview(self, &results))
     }
 
-    fn pretty_preview(word_strs: &[String]) -> String {
+    fn pretty_preview(&self, word_strs: &[String]) -> String {
+        // let mut lines: Vec<String> = Vec::new();
+        // let header_footer = (0..=20).collect::<Vec<u32>>()
         word_strs.join("\n")
+        // header_footer.ite
+        //     .map(|n| {
+        //         n.to
+        //     })
     }
 }
 
@@ -371,7 +377,8 @@ mod tests {
 
         #[test]
         fn pretty_preview() {
-            let actual = InputStates::pretty_preview(&vec![
+            let target = InputStates::new();
+            let actual = target.pretty_preview(&vec![
                 "ABCDE".to_string(),
                 "FGHIJ".to_string(),
                 "KLMNO".to_string(),
