@@ -70,11 +70,8 @@ impl SimpleSolver {
         if word.len() != self.width {
             return;
         }
-        match self.dict_words.iter().position(|r| { r == word }) {
-            Some(index) => {
-                self.dict_words.swap_remove(index);
-            }
-            _ => (),
+        if let Some(index) = self.dict_words.iter().position(|r| { r == word }) {
+            self.dict_words.swap_remove(index);
         }
     }
 }
@@ -105,14 +102,19 @@ mod tests {
 
         #[test]
         fn asset_fields() {
-            let target = SimpleSolver::new(5, &vec!["hello".to_string(), "early".to_string()]);
+            let target = SimpleSolver::new(5, &["hello".to_string(), "early".to_string()]);
             assert_eq!(target.width, 5);
             assert_eq!(target.dict_words, vec!["hello", "early"]);
         }
 
         #[test]
         fn filter_word_only_length_is_5() {
-            let target = SimpleSolver::new(5, &vec!["hello".to_string(), "dog".to_string(), "in".to_string(), "early".to_string(), "difference".to_string()]);
+            let target = SimpleSolver::new(5, &[
+                "hello".to_string(),
+                "dog".to_string(),
+                "in".to_string(),
+                "early".to_string(),
+                "difference".to_string()]);
             assert_eq!(target.dict_words, vec!["hello", "early"]);
         }
     }
@@ -170,7 +172,7 @@ mod tests {
             fn none_but_include() {
                 let mut actual = SimpleSolver::new(
                     5,
-                    &vec!["early".to_string()],
+                    &["early".to_string()],
                 );
                 actual.add_hint("robot", &[Hint { letter: 's', spot: Spot::None() },
                     Hint { letter: 'k', spot: Spot::None() },
@@ -219,14 +221,13 @@ mod tests {
 
             #[test]
             fn multiple_1() {
-                let mut target = SimpleSolver::new(5, &vec![
+                let mut target = SimpleSolver::new(5, &[
                     "hello".to_string(),
                     "early".to_string(),
                     "asset".to_string(),
                     "bound".to_string(),
                     "heard".to_string(),
-                    "spice".to_string(),
-                ]);
+                    "spice".to_string()]);
                 target.add_hint("bound", &[Hint::new('b', Spot::None()),
                     Hint::new('o', Spot::None()),
                     Hint::new('u', Spot::None()),
