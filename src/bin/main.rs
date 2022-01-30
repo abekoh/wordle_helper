@@ -24,6 +24,8 @@ struct Config {
 fn main() {
     let config = Config::parse();
 
+    println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
+
     let dictionary: Box<dyn Dictionary> = Box::new(match TxtDictionary::new(&config.dict_path) {
         Ok(d) => d,
         Err(e) => {
@@ -34,8 +36,6 @@ fn main() {
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &dictionary.extract_words(config.word_length)));
     let mut states: InputStates = InputStates::new();
-
-    println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
 
     loop {
         println!("There are {} words are remained.\n", solver.remained_words_length().to_formatted_string(&Locale::en));

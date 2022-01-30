@@ -4,6 +4,8 @@ use std::io;
 use std::io::{BufRead, copy};
 use std::env;
 use std::path::Path;
+use ansi_term::Color::{Red, Yellow};
+use ansi_term::Style;
 use dialoguer::Confirm;
 use dialoguer::theme::ColorfulTheme;
 use crate::Dictionary;
@@ -47,7 +49,11 @@ impl TxtDictionary {
         if path == "" {
             let default_path = default_dict_path();
             if !default_path.exists() {
-                println!("Default dictionary is not found at {}", default_path.to_str().unwrap());
+                println!("{}",
+                         Style::new().fg(Yellow).paint(
+                             format!("Default dictionary is not found at {}", default_path.to_str().unwrap())
+                         )
+                );
                 if Confirm::with_theme(&ColorfulTheme::default())
                     .with_prompt("Do you download this?")
                     .interact()
