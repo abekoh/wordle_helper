@@ -2,6 +2,7 @@ use std::iter::zip;
 
 use ansi_term::{Colour, Style};
 use ansi_term::Color::{RGB, White};
+use ansi_term::Colour::Cyan;
 use clap::Parser;
 use dialoguer::{Confirm, FuzzySelect, Input, Select};
 use dialoguer::theme::ColorfulTheme;
@@ -37,6 +38,8 @@ fn main() {
             std::process::exit(1);
         }
     });
+    println!("{}", Cyan.paint(format!("word length: {}", config.word_length)));
+    println!("{}", Cyan.paint(format!("# of answer you can guess: {}", config.answer_length)));
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &dictionary.extract_words(config.word_length)));
     let mut states: InputStates = InputStates::new(config.word_length, config.answer_length);
