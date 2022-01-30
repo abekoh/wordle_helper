@@ -72,6 +72,7 @@ fn main() {
                     state.add_word(&input).unwrap();
                 }
                 _ => {
+                    eprintln!("failed to recognize selection");
                     std::process::exit(1);
                 }
             }
