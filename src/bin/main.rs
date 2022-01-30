@@ -168,7 +168,7 @@ fn main() {
                 println!("{}", states.preview(&state).unwrap());
 
                 if Confirm::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Is OK?")
+                    .with_prompt("Is this hint OK?")
                     .default(true)
                     .interact()
                     .unwrap()
