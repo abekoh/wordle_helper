@@ -14,8 +14,11 @@ use wordle_solver::txt::TxtDictionary;
 #[derive(Parser)]
 #[clap(version, about, long_about = None)]
 struct Config {
-    #[clap(short, long, default_value_t = 5, help = "length or word")]
+    #[clap(short, long, default_value_t = 5, help = "length of one word")]
     word_length: usize,
+
+    #[clap(short, long, default_value_t = 6, help = "how many you can answer")]
+    answer_length: usize,
 
     #[clap(short, long, hide_default_value = true, default_value = "", help = "dictionary path")]
     dict_path: String,
