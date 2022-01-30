@@ -364,4 +364,23 @@ mod tests {
             }
         }
     }
+
+    #[cfg(test)]
+    mod input_states {
+        use super::*;
+
+        #[test]
+        fn pretty_preview() {
+            let actual = InputStates::pretty_preview(&vec![
+                "ABCDE".to_string(),
+                "FGHIJ".to_string(),
+                "KLMNO".to_string(),
+            ]);
+            assert_eq!(actual, r#"+-----+
+|ABCDE|
+|FGHIJ|
+|KLMNO|
++-----+"#)
+        }
+    }
 }
