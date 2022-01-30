@@ -14,10 +14,10 @@ use wordle_solver::simple::SimpleSolver;
 #[derive(Parser)]
 #[clap(version, about, long_about = None)]
 struct Config {
-    #[clap(short, long, default_value_t = 5)]
+    #[clap(short, long, default_value_t = 5, help = "length or word")]
     word_length: usize,
 
-    #[clap(short, long, default_value = "data/words_alpha.txt")]
+    #[clap(short, long, hide_default_value = true, default_value = "", help = "dictionary path")]
     dict_path: String,
 }
 
