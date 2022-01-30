@@ -1,35 +1,41 @@
-use std::fs::File;
-use std::io;
-use std::io::BufRead;
 use std::iter::zip;
 
-use ansi_term::Color::{RGB, White};
 use ansi_term::{Colour, Style};
+use ansi_term::Color::{RGB, White};
 use clap::Parser;
 use dialoguer::{Confirm, FuzzySelect, Input};
 use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
 
-use wordle_solver::{Hint, Solver, Spot};
+use wordle_solver::{Dictionary, Hint, Solver, Spot};
+use wordle_solver::txt::TxtDictionary;
 use wordle_solver::simple::SimpleSolver;
 
 #[derive(Parser)]
 #[clap(version, about, long_about = None)]
 struct Config {
-    #[clap(short, long, default_value_t = 5)]
+    #[clap(short, long, default_value_t = 5, help = "length or word")]
     word_length: usize,
 
-    #[clap(short, long, default_value = "data/words_alpha.txt")]
+    #[clap(short, long, hide_default_value = true, default_value = "", help = "dictionary path")]
     dict_path: String,
 }
 
 fn main() {
     let config = Config::parse();
 
-    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &get_words(&config.dict_path)));
-    let mut states: InputStates = InputStates::new();
-
     println!("{}\n", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
+
+    let dictionary: Box<dyn Dictionary> = Box::new(match TxtDictionary::new(&config.dict_path) {
+        Ok(d) => d,
+        Err(e) => {
+            eprintln!("failed to load dictionary: {}", e);
+            std::process::exit(1);
+        }
+    });
+
+    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &dictionary.extract_words(config.word_length)));
+    let mut states: InputStates = InputStates::new();
 
     loop {
         println!("There are {} words are remained.\n", solver.remained_words_length().to_formatted_string(&Locale::en));
@@ -94,26 +100,6 @@ fn main() {
             }
         }
     }
-}
-
-fn get_words(dict_path: &str) -> Vec<String> {
-    let file = match File::open(dict_path) {
-        Ok(v) => v,
-        Err(e) => {
-            eprintln!("failed to load '{}': {}", dict_path, e);
-            std::process::exit(1);
-        }
-    };
-    let dict: Vec<String> = io::BufReader::new(file)
-        .lines()
-        .filter_map(|e| {
-            e.ok()
-        })
-        .map(|line| {
-            String::from(line.trim())
-        })
-        .collect();
-    dict
 }
 
 struct InputState {
@@ -249,7 +235,6 @@ impl InputStates {
 #[cfg(test)]
 mod tests {
     use super::*;
-
 
     #[cfg(test)]
     mod input_state {
