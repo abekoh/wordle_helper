@@ -6,7 +6,6 @@ use clap::Parser;
 use dialoguer::{Confirm, FuzzySelect, Input, Select};
 use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
-use num_format::Locale::hi;
 
 use wordle_solver::{Dictionary, Hint, Solver, Spot};
 use wordle_solver::txt::TxtDictionary;

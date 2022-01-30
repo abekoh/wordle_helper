@@ -1,5 +1,3 @@
-use num_format::Locale::tr;
-
 pub mod simple;
 pub mod txt;
 
