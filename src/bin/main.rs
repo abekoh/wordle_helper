@@ -39,7 +39,7 @@ fn main() {
     });
 
     let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &dictionary.extract_words(config.word_length)));
-    let mut states: InputStates = InputStates::new(config.word_length);
+    let mut states: InputStates = InputStates::new(config.word_length, config.answer_length);
 
     loop {
         let remained_words_length = solver.remained_words_length();
@@ -256,12 +256,13 @@ impl InputState {
 
 struct InputStates {
     word_width: usize,
+    answer_width: usize,
     states: Vec<InputState>,
 }
 
 impl InputStates {
-    pub fn new(word_width: usize) -> Self {
-        InputStates { states: Vec::new(), word_width }
+    pub fn new(word_width: usize, answer_width: usize) -> Self {
+        InputStates { states: Vec::new(), word_width, answer_width }
     }
 
     pub fn add(&mut self, state: InputState) {
@@ -293,15 +294,16 @@ impl InputStates {
     }
 
     fn pretty_preview(&self, word_strs: &[String]) -> String {
-        let header_footer: String = format!("+{}+", (0..self.word_width).collect::<Vec<usize>>()
-            .iter()
-            .map(|_| { "-".to_string() })
-            .collect::<Vec<String>>()
-            .join(""));
+        let header_footer: String = format!("+{}+", "-".repeat(self.word_width));
+
         let mut results: Vec<String> = Vec::new();
         results.push(header_footer.clone());
-        for word_str in word_strs {
-            results.push(format!("|{}|", word_str));
+        for i in 0..self.answer_width {
+            if i < word_strs.len() {
+                results.push(format!("|{}|", word_strs[i]));
+            } else {
+                results.push(format!("|{}|", " ".repeat(self.word_width)));
+            }
         }
         results.push(header_footer.clone());
         results.join("\n")
@@ -386,7 +388,7 @@ mod tests {
 
         #[test]
         fn pretty_preview() {
-            let target = InputStates::new(5);
+            let target = InputStates::new(5, 6);
             let actual = target.pretty_preview(&vec![
                 "ABCDE".to_string(),
                 "FGHIJ".to_string(),
@@ -396,6 +398,9 @@ mod tests {
 |ABCDE|
 |FGHIJ|
 |KLMNO|
+|     |
+|     |
+|     |
 +-----+"#)
         }
     }
