@@ -20,10 +20,29 @@ impl SimpleSolver {
         }
     }
 
+    fn shrink_hints(hints: &[Hint]) -> Vec<Hint> {
+        let mut results: Vec<Hint> = Vec::new();
+        for hint in hints {
+            if hint.spot == Spot::None()
+                && hints
+                .iter()
+                .filter(|h| {
+                    match h.spot {
+                        Spot::At(_) => h.letter == hint.letter,
+                        _ => false,
+                    }
+                }).count() > 0 {
+                continue;
+            }
+            results.push(hint.clone());
+        }
+        return results;
+    }
+
     fn update_with_hints(&mut self, hints: &[Hint]) {
         self.dict_words = self.dict_words.iter()
             .filter(|word| {
-                for hint in hints {
+                for hint in Self::shrink_hints(hints) {
                     let res = match &hint.spot {
                         Spot::None() => {
                             !word.contains(hint.letter)
@@ -98,6 +117,23 @@ mod tests {
         }
     }
 
+    #[test]
+    fn shrink_words() {
+        let actual = SimpleSolver::shrink_hints(&vec![
+            Hint { letter: 'r', spot: Spot::None() },
+            Hint { letter: 'o', spot: Spot::At(1) },
+            Hint { letter: 'b', spot: Spot::None() },
+            Hint { letter: 'o', spot: Spot::None() },
+            Hint { letter: 't', spot: Spot::At(4) },
+        ]);
+        assert_eq!(actual, vec![
+            Hint { letter: 'r', spot: Spot::None() },
+            Hint { letter: 'o', spot: Spot::At(1) },
+            Hint { letter: 'b', spot: Spot::None() },
+            Hint { letter: 't', spot: Spot::At(4) },
+        ])
+    }
+
     #[cfg(test)]
     mod suggest {
         use super::*;
@@ -130,6 +166,22 @@ mod tests {
                 let mut target = SimpleSolver::new(5, &preset_words());
                 target.add_hint("dummy", &vec![Hint { letter: 'l', spot: Spot::None() }]);
                 assert_eq!(target.suggest(), &vec![String::from("asset")]);
+            }
+
+            #[test]
+            fn none_but_include() {
+                let mut actual = SimpleSolver::new(
+                    5,
+                    &vec!["early".to_string()],
+                );
+                actual.add_hint("robot", &vec![
+                    Hint { letter: 's', spot: Spot::None() },
+                    Hint { letter: 'k', spot: Spot::None() },
+                    Hint { letter: 'i', spot: Spot::None() },
+                    Hint { letter: 'l', spot: Spot::At(3) },
+                    Hint { letter: 'l', spot: Spot::None() },
+                ]);
+                assert_eq!(actual.suggest(), &vec![String::from("early")]);
             }
         }
 
