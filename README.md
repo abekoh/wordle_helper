@@ -1,6 +1,6 @@
-# wordle_solver
+# wordle_helper
 
-![example workflow](https://github.com/abekoh/wordle_solver/actions/workflows/test.yml/badge.svg)
+![example workflow](https://github.com/abekoh/wordle_helper/actions/workflows/test.yml/badge.svg)
 
 solve [Wordle](https://www.powerlanguage.co.uk/wordle/) with CLI.
 
@@ -19,7 +19,7 @@ rustup install nightly
 ## Install
 
 ```bash
-cargo install --git https://github.com/abekoh/wordle_solver
+cargo install --git https://github.com/abekoh/wordle_helper
 ```
 
 ## Usage

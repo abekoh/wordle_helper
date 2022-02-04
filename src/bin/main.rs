@@ -8,9 +8,9 @@ use dialoguer::{Confirm, FuzzySelect, Input, Select};
 use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
 
-use wordle_solver::{Dictionary, Hint, Solver, Spot};
-use wordle_solver::simple::SimpleSolver;
-use wordle_solver::txt::TxtDictionary;
+use wordle_helper::{Dictionary, Hint, Solver, Spot};
+use wordle_helper::simple::SimpleSolver;
+use wordle_helper::txt::TxtDictionary;
 
 #[derive(Parser)]
 #[clap(version, about, long_about = None)]
