@@ -8,8 +8,8 @@ use dialoguer::{Confirm, FuzzySelect, Input, Select};
 use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
 
-use wordle_helper::{Dictionary, Hint, Solver, Spot};
-use wordle_helper::simple::SimpleSolver;
+use wordle_helper::{Dictionary, Hint, Helper, Spot};
+use wordle_helper::simple::SimpleHelper;
 use wordle_helper::txt::TxtDictionary;
 
 #[derive(Parser)]
@@ -41,7 +41,7 @@ fn main() {
     println!("{}", Cyan.paint(format!("word length: {}", config.word_length)));
     println!("{}", Cyan.paint(format!("number of answer you can guess: {}", config.max_guess_count)));
 
-    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &dictionary.extract_words(config.word_length)));
+    let mut solver: Box<dyn Helper> = Box::new(SimpleHelper::new(config.word_length, &dictionary.extract_words(config.word_length)));
     let mut states: InputStates = InputStates::new(config.word_length, config.max_guess_count);
 
     loop {

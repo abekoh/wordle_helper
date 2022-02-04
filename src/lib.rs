@@ -27,7 +27,7 @@ impl Hint {
     }
 }
 
-pub trait Solver {
+pub trait Helper {
     fn suggest(&self) -> &Vec<String>;
     fn add_hint(&mut self, word: &str, hints: &[Hint]);
     fn remained_words_length(&self) -> usize;

@@ -1,14 +1,14 @@
-use crate::{Hint, Solver, Spot};
+use crate::{Hint, Helper, Spot};
 
 #[derive(Debug)]
-pub struct SimpleSolver {
+pub struct SimpleHelper {
     width: usize,
     dict_words: Vec<String>,
 }
 
-impl SimpleSolver {
-    pub fn new(width: usize, dict_words: &[String]) -> SimpleSolver {
-        SimpleSolver {
+impl SimpleHelper {
+    pub fn new(width: usize, dict_words: &[String]) -> SimpleHelper {
+        SimpleHelper {
             width,
             dict_words: dict_words.iter()
                 .filter(|word| {
@@ -74,7 +74,7 @@ impl SimpleSolver {
     }
 }
 
-impl Solver for SimpleSolver {
+impl Helper for SimpleHelper {
     fn suggest(&self) -> &Vec<String> {
         &self.dict_words
     }
@@ -99,14 +99,14 @@ mod tests {
 
         #[test]
         fn asset_fields() {
-            let target = SimpleSolver::new(5, &["hello".to_string(), "early".to_string()]);
+            let target = SimpleHelper::new(5, &["hello".to_string(), "early".to_string()]);
             assert_eq!(target.width, 5);
             assert_eq!(target.dict_words, vec!["hello", "early"]);
         }
 
         #[test]
         fn filter_word_only_length_is_5() {
-            let target = SimpleSolver::new(5, &[
+            let target = SimpleHelper::new(5, &[
                 "hello".to_string(),
                 "dog".to_string(),
                 "in".to_string(),
@@ -122,7 +122,7 @@ mod tests {
 
         #[test]
         fn remove_none_when_has_at() {
-            let actual = SimpleSolver::shrink_hints(&[
+            let actual = SimpleHelper::shrink_hints(&[
                 Hint { letter: 'r', spot: Spot::None() },
                 Hint { letter: 'o', spot: Spot::At(1) },
                 Hint { letter: 'b', spot: Spot::None() },
@@ -139,7 +139,7 @@ mod tests {
 
         #[test]
         fn remove_none_when_has_in_without() {
-            let actual = SimpleSolver::shrink_hints(&[
+            let actual = SimpleHelper::shrink_hints(&[
                 Hint { letter: 't', spot: Spot::None() },
                 Hint { letter: 'a', spot: Spot::InWithout(1) },
                 Hint { letter: 'y', spot: Spot::InWithout(2) },
@@ -166,7 +166,7 @@ mod tests {
 
         #[test]
         fn remove_word() {
-            let mut target = SimpleSolver::new(5, &preset_words());
+            let mut target = SimpleHelper::new(5, &preset_words());
             target.add_hint("hello", &[]);
             assert_eq!(target.suggest(), &vec![String::from("asset"), String::from("early")]);
         }
@@ -177,21 +177,21 @@ mod tests {
 
             #[test]
             fn a() {
-                let mut target = SimpleSolver::new(5, &preset_words());
+                let mut target = SimpleHelper::new(5, &preset_words());
                 target.add_hint("dummy", &[Hint { letter: 'a', spot: Spot::None() }]);
                 assert_eq!(target.suggest(), &vec![String::from("hello")]);
             }
 
             #[test]
             fn l() {
-                let mut target = SimpleSolver::new(5, &preset_words());
+                let mut target = SimpleHelper::new(5, &preset_words());
                 target.add_hint("dummy", &[Hint { letter: 'l', spot: Spot::None() }]);
                 assert_eq!(target.suggest(), &vec![String::from("asset")]);
             }
 
             #[test]
             fn none_but_include() {
-                let mut actual = SimpleSolver::new(
+                let mut actual = SimpleHelper::new(
                     5,
                     &["early".to_string()],
                 );
@@ -210,14 +210,14 @@ mod tests {
 
             #[test]
             fn l_2() {
-                let mut target = SimpleSolver::new(5, &preset_words());
+                let mut target = SimpleHelper::new(5, &preset_words());
                 target.add_hint("dummy", &[Hint { letter: 'l', spot: Spot::InWithout(2) }]);
                 assert_eq!(target.suggest(), &vec![String::from("early")]);
             }
 
             #[test]
             fn e_0() {
-                let mut target = SimpleSolver::new(5, &preset_words());
+                let mut target = SimpleHelper::new(5, &preset_words());
                 target.add_hint("dummy", &[Hint { letter: 'e', spot: Spot::InWithout(0) }]);
                 assert_eq!(target.suggest(), &vec![String::from("hello"), String::from("asset")]);
             }
@@ -230,7 +230,7 @@ mod tests {
 
             #[test]
             fn t_4() {
-                let mut target = SimpleSolver::new(5, &preset_words());
+                let mut target = SimpleHelper::new(5, &preset_words());
                 target.add_hint("dummy", &[Hint { letter: 't', spot: Spot::At(4) }]);
                 assert_eq!(target.suggest(), &vec![String::from("asset")]);
             }
@@ -242,7 +242,7 @@ mod tests {
 
             #[test]
             fn multiple_1() {
-                let mut target = SimpleSolver::new(5, &[
+                let mut target = SimpleHelper::new(5, &[
                     "hello".to_string(),
                     "early".to_string(),
                     "asset".to_string(),
