@@ -25,12 +25,12 @@ cargo install --git https://github.com/abekoh/wordle_helper
 ## Usage
 
 ```
-$ wordle-solver
-wordle-solver 0.1.0
+$ wordle-helper
+wordle-helper 0.1.0
 Solve a wordle question with CLI.
 
 USAGE:
-    wordle-solver [OPTIONS]
+    wordle-helper [OPTIONS]
 
 OPTIONS:
     -d, --dict-path <DICT_PATH>                dictionary path
@@ -43,11 +43,11 @@ OPTIONS:
 If you use as default (words of length = 5, number of answer you can guess = 6), it's simple.  
 And you can download English words from [dwyl/english-words](https://github.com/dwyl/english-words) automatically.
 ```bash
-wordle-solver
+wordle-helper
 ```
 
 You can configure some parameters.
 
 ```bash
-wordle-solver -d ~/your-original-dict.txt -w 7 -m 10
+wordle-helper -d ~/your-original-dict.txt -w 7 -m 10
 ```

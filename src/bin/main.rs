@@ -28,7 +28,7 @@ struct Config {
 fn main() {
     let config = Config::parse();
 
-    println!("{}", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
+    println!("{}", Style::new().bold().paint("Welcome to WORDLE HELPER"));
 
     let dictionary: Box<dyn Dictionary> = Box::new(match TxtDictionary::new(&config.dict_path) {
         Ok(d) => d,
