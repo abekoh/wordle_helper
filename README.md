@@ -2,6 +2,8 @@
 
 solve [Wordle](https://www.powerlanguage.co.uk/wordle/) with CLI.
 
+![Demo](images/demo.gif)
+
 ## Requirement
 
 Rust 1.59 or higher.
