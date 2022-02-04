@@ -10,7 +10,7 @@ solve [Wordle](https://www.powerlanguage.co.uk/wordle/) with CLI.
 
 Rust 1.59 or higher.
 
-So, now (2022.02.05) you have to use nightly version.
+So, you have to use nightly version (at 2022.02.05).
 
 ```bash
 rustup install nightly
