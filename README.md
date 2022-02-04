@@ -1,5 +1,7 @@
 # wordle_solver
 
+![example workflow](https://github.com/abekoh/wordle_solver/actions/workflows/test.yml/badge.svg)
+
 solve [Wordle](https://www.powerlanguage.co.uk/wordle/) with CLI.
 
 ![Demo](images/demo.gif)
