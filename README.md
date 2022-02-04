@@ -27,7 +27,7 @@ cargo install --git https://github.com/abekoh/wordle_helper
 ```
 $ wordle-helper
 wordle-helper 0.1.0
-Solve a wordle question with CLI.
+Help solving wordle question with CLI.
 
 USAGE:
     wordle-helper [OPTIONS]
@@ -42,6 +42,7 @@ OPTIONS:
 
 If you use as default (words of length = 5, number of answer you can guess = 6), it's simple.  
 And you can download English words from [dwyl/english-words](https://github.com/dwyl/english-words) automatically.
+
 ```bash
 wordle-helper
 ```
