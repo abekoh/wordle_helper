@@ -2,7 +2,7 @@
 
 ![example workflow](https://github.com/abekoh/wordle_helper/actions/workflows/test.yml/badge.svg)
 
-help solving [Wordle](https://www.powerlanguage.co.uk/wordle/) question with CLI.
+Help solving [Wordle](https://www.powerlanguage.co.uk/wordle/) question with CLI.
 
 ![Demo](images/demo.gif)
 
