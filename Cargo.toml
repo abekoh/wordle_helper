@@ -1,9 +1,9 @@
 [package]
-name = "wordle-solver"
+name = "wordle-helper"
 version = "0.1.0"
-description = "Solve a wordle question with CLI."
+description = "Help solving wordle question with CLI."
 edition = "2021"
-repository = "https://github.com/abekoh/wordle_solver"
+repository = "https://github.com/abekoh/wordle_helper"
 license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -15,8 +15,8 @@ num-format = "^0.4.0"
 # use: https://github.com/mitsuhiko/dialoguer/pull/162
 # TODO: fix version
 dialoguer = { git = "https://github.com/craciuncezar/dialoguer", rev = "252a183fe07359c02bc8e165f53e735376069580", features = ["fuzzy-select"] }
-reqwest = {version = "^0.11.9", features=["blocking"]}
+reqwest = { version = "^0.11.9", features = ["blocking"] }
 
 [[bin]]
-name = "wordle-solver"
+name = "wordle-helper"
 path = "src/bin/main.rs"

@@ -12,7 +12,7 @@ use dialoguer::theme::ColorfulTheme;
 
 use crate::Dictionary;
 
-const DEFAULT_CACHE_DIR: &str = "wordle-solver";
+const DEFAULT_CACHE_DIR: &str = "wordle-helper";
 const DEFAULT_FILENAME: &str = "words_alpha.txt";
 
 fn default_dict_path() -> Box<Path> {

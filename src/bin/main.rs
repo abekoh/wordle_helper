@@ -8,9 +8,9 @@ use dialoguer::{Confirm, FuzzySelect, Input, Select};
 use dialoguer::theme::ColorfulTheme;
 use num_format::{Locale, ToFormattedString};
 
-use wordle_solver::{Dictionary, Hint, Solver, Spot};
-use wordle_solver::simple::SimpleSolver;
-use wordle_solver::txt::TxtDictionary;
+use wordle_helper::{Dictionary, Hint, Helper, Spot};
+use wordle_helper::simple::SimpleHelper;
+use wordle_helper::txt::TxtDictionary;
 
 #[derive(Parser)]
 #[clap(version, about, long_about = None)]
@@ -28,7 +28,7 @@ struct Config {
 fn main() {
     let config = Config::parse();
 
-    println!("{}", Style::new().bold().paint("Welcome to WORDLE SOLVER"));
+    println!("{}", Style::new().bold().paint("Welcome to WORDLE HELPER"));
 
     let dictionary: Box<dyn Dictionary> = Box::new(match TxtDictionary::new(&config.dict_path) {
         Ok(d) => d,
@@ -41,11 +41,11 @@ fn main() {
     println!("{}", Cyan.paint(format!("word length: {}", config.word_length)));
     println!("{}", Cyan.paint(format!("number of answer you can guess: {}", config.max_guess_count)));
 
-    let mut solver: Box<dyn Solver> = Box::new(SimpleSolver::new(config.word_length, &dictionary.extract_words(config.word_length)));
+    let mut helper: Box<dyn Helper> = Box::new(SimpleHelper::new(config.word_length, &dictionary.extract_words(config.word_length)));
     let mut states: InputStates = InputStates::new(config.word_length, config.max_guess_count);
 
     loop {
-        let remained_words_length = solver.remained_words_length();
+        let remained_words_length = helper.remained_words_length();
         if remained_words_length == 0 {
             println!();
             eprintln!("Sorry, there are no matched words. quit.");
@@ -70,7 +70,7 @@ fn main() {
             .unwrap();
         match selected_type_idx {
             0 => {
-                let suggested = solver.suggest();
+                let suggested = helper.suggest();
                 let selected = FuzzySelect::with_theme(&ColorfulTheme::default())
                     .with_prompt("Guess")
                     .default(0)
@@ -179,7 +179,7 @@ fn main() {
                     println!("{}", states.preview(&state).unwrap());
                     std::process::exit(0);
                 }
-                solver.add_hint(word, hints);
+                helper.add_hint(word, hints);
                 states.add(state);
                 break;
             }
