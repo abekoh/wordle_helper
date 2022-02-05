@@ -102,7 +102,7 @@ impl Dictionary for TxtDictionary {
                 e.ok()
             })
             .filter(|w| {
-                w.len() == word_length
+                w.chars().count() == word_length
             })
             .map(|line| {
                 String::from(line.trim())
