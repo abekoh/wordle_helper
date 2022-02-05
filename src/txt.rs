@@ -117,13 +117,24 @@ mod tests {
     use super::*;
 
     #[test]
-    fn extract_words() {
+    fn extract_words_english() {
         let target = TxtDictionary::new_for_debug("src/testdata/english.txt");
         let actual = target.extract_words(5);
         assert_eq!(actual, vec![
             String::from("apple"),
             String::from("early"),
             String::from("asset"),
+        ])
+    }
+
+    #[test]
+    fn extract_words_japanese() {
+        let target = TxtDictionary::new_for_debug("src/testdata/japanese_pokemon.txt");
+        let actual = target.extract_words(5);
+        assert_eq!(actual, vec![
+            String::from("フシギダネ"),
+            String::from("サンドパン"),
+            String::from("ニャスパー"),
         ])
     }
 }
