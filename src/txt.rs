@@ -87,6 +87,7 @@ impl TxtDictionary {
         }
     }
 
+    #[allow(dead_code)]
     fn new_for_debug(path: &str) -> Self {
         Self {
             file: File::open(path).unwrap()
