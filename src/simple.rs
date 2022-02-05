@@ -262,6 +262,49 @@ mod tests {
                     Hint::new('e', Spot::InWithout(4))]);
                 assert_eq!(target.suggest(), &vec![String::from("asset")]);
             }
+
+            #[test]
+            fn multiple_japanese() {
+                let mut target = SimpleHelper::new(5, &[
+                    "ピカチュウ".to_string(),
+                    "フシギダネ".to_string(),
+                    "バタフリー".to_string(),
+                    "ベイリーフ".to_string(),
+                    "バクフーン".to_string(),
+                ]);
+                target.add_hint("ピカチュウ", &[
+                    Hint::new('ピ', Spot::None()),
+                    Hint::new('カ', Spot::None()),
+                    Hint::new('チ', Spot::None()),
+                    Hint::new('ュ', Spot::None()),
+                    Hint::new('ウ', Spot::None())]);
+                assert_eq!(target.suggest(), &vec![
+                    "フシギダネ".to_string(),
+                    "バタフリー".to_string(),
+                    "ベイリーフ".to_string(),
+                    "バクフーン".to_string(),
+                ]);
+                target.add_hint("フシギダネ", &[
+                    Hint::new('フ', Spot::InWithout(0)),
+                    Hint::new('シ', Spot::None()),
+                    Hint::new('ギ', Spot::None()),
+                    Hint::new('ダ', Spot::None()),
+                    Hint::new('ネ', Spot::None())]);
+                assert_eq!(target.suggest(), &vec![
+                    "バタフリー".to_string(),
+                    "ベイリーフ".to_string(),
+                    "バクフーン".to_string(),
+                ]);
+                target.add_hint("バタフリー", &[
+                    Hint::new('バ', Spot::At(0)),
+                    Hint::new('タ', Spot::None()),
+                    Hint::new('フ', Spot::At(2)),
+                    Hint::new('リ', Spot::None()),
+                    Hint::new('ー', Spot::InWithout(4))]);
+                assert_eq!(target.suggest(), &vec![
+                    "バクフーン".to_string(),
+                ]);
+            }
         }
     }
 }

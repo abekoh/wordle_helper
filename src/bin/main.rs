@@ -223,7 +223,7 @@ impl InputState {
     }
 
     pub fn add_word(&mut self, input: &str) -> Result<(), &'static str> {
-        if input.trim().len() != self.word_length {
+        if input.trim().chars().count() != self.word_length {
             return Result::Err("invalid word length");
         }
         self.word = Option::from(input.trim().to_string());
