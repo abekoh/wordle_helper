@@ -86,6 +86,13 @@ impl TxtDictionary {
             Ok(TxtDictionary { file })
         }
     }
+
+    #[allow(dead_code)]
+    fn new_for_debug(path: &str) -> Self {
+        Self {
+            file: File::open(path).unwrap()
+        }
+    }
 }
 
 impl Dictionary for TxtDictionary {
@@ -96,12 +103,39 @@ impl Dictionary for TxtDictionary {
                 e.ok()
             })
             .filter(|w| {
-                w.len() == word_length
+                w.chars().count() == word_length
             })
             .map(|line| {
                 String::from(line.trim())
             })
             .collect();
         dict
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn extract_words_english() {
+        let target = TxtDictionary::new_for_debug("src/testdata/english.txt");
+        let actual = target.extract_words(5);
+        assert_eq!(actual, vec![
+            String::from("apple"),
+            String::from("early"),
+            String::from("asset"),
+        ])
+    }
+
+    #[test]
+    fn extract_words_japanese() {
+        let target = TxtDictionary::new_for_debug("src/testdata/japanese_pokemon.txt");
+        let actual = target.extract_words(5);
+        assert_eq!(actual, vec![
+            String::from("フシギダネ"),
+            String::from("サンドパン"),
+            String::from("ニャスパー"),
+        ])
     }
 }
