@@ -49,10 +49,10 @@ impl SimpleHelper {
                             if !word.contains(hint.letter) {
                                 return false;
                             }
-                            word.as_bytes()[*spot as usize] as char != hint.letter
+                            word.chars().nth(*spot as usize).unwrap() != hint.letter
                         }
                         Spot::At(at_spot) => {
-                            word.as_bytes()[(*at_spot)] as char == hint.letter
+                            word.chars().nth(*at_spot as usize).unwrap() == hint.letter
                         }
                     };
                     if !res {
