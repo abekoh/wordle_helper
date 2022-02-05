@@ -86,6 +86,12 @@ impl TxtDictionary {
             Ok(TxtDictionary { file })
         }
     }
+
+    fn new_for_debug(path: &str) -> Self {
+        Self {
+            file: File::open(path).unwrap()
+        }
+    }
 }
 
 impl Dictionary for TxtDictionary {
@@ -103,5 +109,21 @@ impl Dictionary for TxtDictionary {
             })
             .collect();
         dict
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn extract_words() {
+        let target = TxtDictionary::new_for_debug("src/testdata/english.txt");
+        let actual = target.extract_words(5);
+        assert_eq!(actual, vec![
+            String::from("apple"),
+            String::from("early"),
+            String::from("asset"),
+        ])
     }
 }
