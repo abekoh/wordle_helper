@@ -12,7 +12,7 @@ impl SimpleHelper {
             width,
             dict_words: dict_words.iter()
                 .filter(|word| {
-                    word.len() == width
+                    word.chars().count() == width
                 })
                 .map(|word| {
                     word.to_string()
