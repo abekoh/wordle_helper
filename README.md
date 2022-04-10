@@ -10,12 +10,6 @@ Help solving [Wordle](https://www.powerlanguage.co.uk/wordle/) question with CLI
 
 Rust 1.59 or higher.
 
-So, you have to use nightly version (at 2022.02.05).
-
-```bash
-rustup install nightly
-```
-
 ## Install
 
 ```bash
